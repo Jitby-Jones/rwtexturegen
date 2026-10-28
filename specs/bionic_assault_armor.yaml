@@ -1,14 +1,14 @@
 # Bionic armor suit in the marine / recon / cataphract lineage.
-#   * marine: proud flared shoulder pads, collar yoke around a foreshortened neck ring,
-#     V-neck chest plate, belt with a node, splayed tassets
-#   * recon: segmented abdomen plates, slimmer read on Thin bodies
-#   * cataphract: raised pad line and heavy chest facets
-#   * bionic: artificial-muscle undersuit (DMS bionic suit), exposed bionic joint caps,
-#     segmented bionic spine with cyan nodes, chest power core; faceless helm with a sensor
-#     band and ONE bionic eye using the vanilla bionic-eye palette (light plate, black ring,
-#     teal lens), ear ports and a neural port at the back.
-# Plates are authored on the 3D torso/head proxies (rwtex/form.py), so they follow
-# perspective and fit all 5 body types x 3 directions automatically.
+#   * the vanilla marine construction (rwtex/archetypes/armor3d.py: marine_kit), fitted to every
+#     body type from measurements of vanilla PowerArmor: shell that hugs the body, big neck ring
+#     with a light lip, chest plate with chamfer facets and black-dark-black seams, near-black
+#     belt that tilts in the east view, three tassets, east pauldron, north spine;
+#   * bionic: artificial-muscle undersuit (DMS bionic suit), a segmented bionic spine with cyan
+#     nodes in place of the back plate, a chest power core and a bionic belt node, cyan seams on
+#     the chest chamfers, an exposed bionic joint cap on the pauldron;
+#   * helmet: closed white helm (the DMS bionic suit's featureless mask made into armor) with a
+#     dark sensor band, ONE bionic eye in the vanilla bionic-eye palette (light plate, black
+#     ring, teal lens), ear ports and a neural port continuing the spine.
 # Shell plates are white and masked red so ideology/stuff colours tint the armor.
 name: BionicAssaultArmor
 archetype: armor

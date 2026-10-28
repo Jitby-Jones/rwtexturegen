@@ -41,6 +41,11 @@ python -m pytest -q                               # smoke tests (~1 min)
   points plus the older 2D designs), `armor3d` (the perspective-correct marine, recon, cataphract
   and bionic designs) and `bionic` (Bionic Icons items).
 - `rwtex/form.py` holds the 3D torso and head proxies used by apparel.
+  `rwtex/data/armor_fit.json` holds the vanilla PowerArmor fit (silhouette offsets and plate
+  heights per body type).
+- New armor or helmet designs should build on `marine_kit`, `vplate`, `hshell` and `hplate` in
+  `armor3d.py`, not on hand-placed 2D shapes. Those helpers are what keep every body type and
+  view consistent with vanilla.
 - `docs/` holds `STYLE_GUIDE.md` (measurements), `MOD_STYLES.md`, `ARCHETYPES.md` (every
   parameter) and `WORKFLOW.md`.
 

@@ -154,6 +154,39 @@ Helmet footprints (head texture space):
 | AdvancedHelmet | x37–90, y35–75 | x34–94, y35–73 |
 | SimpleHelmet | x35–93, y30–68 | x34–94, y31–69 |
 
+**How vanilla marine armor is built** (measured row by row on PowerArmor and ReconArmor in all
+5 body types; the generator's `marine_kit` follows it):
+
+- **Shell.** One shell covers the upper torso and **hugs the body**. Its coloured edge stays
+  within about -4 to +4 px of the naked silhouette, and the ~4 px outline does the rest. Its top
+  follows the body's own rounded shoulders. It bulges slightly at the chest and pinches under it
+  into the belt. The per-body offsets are in `rwtex/data/armor_fit.json`: the Thin shell adds
+  bulk, the Hulk and Female shells sit slightly inside the body, and the Female torso is short,
+  with a dark skirt below short tassets.
+- **Neck.** The neck hole is large: about 0.33 × the shoulder half-width + 4 px wide and 0.115 ×
+  the body height tall. It is near-black (#333), with a black ring and a light #ccc lip that is
+  thickest at the front.
+- **Chest plate.** The chest plate runs from the lip to the belt and is white. It has 5 px #ccc
+  chamfer facets on its sides and a notch for the belt node. It is separated from the white flank
+  strips by a black-dark-black seam (`#d#`).
+- **Belt.** The belt is near-black with two dark segments and a round dark node in the centre. It
+  sits **lower at the front than at the back**, which is what makes it a diagonal in the east
+  view.
+- **Tassets.** The centre tasset (about 0.35 × hip width, white, split at the top around the node)
+  and the narrow #ccc side tassets at the silhouette edge are separated by wide near-black gaps.
+- **East view.**
+  - The shell's side face is #ccc and its front-top is cut on a diagonal, where the head sits.
+  - A big pauldron covers the front half of the torso side, with a white front facet and a #ccc
+    side facet.
+  - Below are a #ccc thigh plate at the back and a narrow white front tasset.
+- **North view.** Everything is a step darker. The #ccc shell is split by a narrow spine plate
+  whose seams fan out toward the shoulders, the hip plates are #999, and the belt and gaps are
+  dark.
+- **Marine helmet.** The shell follows the head silhouette, inset about 1.5 px. It has a top slot,
+  a brow V-crease down to the nose bridge, and a T-shaped visor. The visor is **transparent**,
+  framed by the outline, and shows the pawn's eyes. In the east view, a diagonal seam splits the
+  #999 side and back from a lighter front.
+
 **Why marine, recon and cataphract read so well:**
 
 - Shapes: a few large plates. There is a V or yoke chest plate, a foreshortened neck ring and a

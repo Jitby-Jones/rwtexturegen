@@ -2,7 +2,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.318, bbox=x22-104 y30-113, outline_dark_frac=1.0, outline_px=4.0, colours=70, mean_luma=0.823
+  stats size=128x128, coverage=0.215, bbox=x31-95 y41-110, outline_dark_frac=1.0, outline_px=4.0, colours=73, mean_luma=0.668
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Male_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -12,7 +12,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.255, bbox=x36-92 y29-114, outline_dark_frac=1.0, outline_px=3.0, colours=67, mean_luma=0.72
+  stats size=128x128, coverage=0.168, bbox=x37-89 y41-110, outline_dark_frac=1.0, outline_px=4.0, colours=31, mean_luma=0.664
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Male_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -22,7 +22,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.313, bbox=x22-104 y30-113, outline_dark_frac=1.0, outline_px=4.0, colours=40, mean_luma=0.699
+  stats size=128x128, coverage=0.216, bbox=x32-95 y41-110, outline_dark_frac=1.0, outline_px=4.0, colours=27, mean_luma=0.578
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Male_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -32,7 +32,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.321, bbox=x32-95 y23-120, outline_dark_frac=1.0, outline_px=4.0, colours=66, mean_luma=0.826
+  stats size=128x128, coverage=0.197, bbox=x36-91 y41-116, outline_dark_frac=1.0, outline_px=4.0, colours=52, mean_luma=0.447
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Female_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -42,7 +42,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.268, bbox=x29-85 y23-120, outline_dark_frac=1.0, outline_px=4.0, colours=53, mean_luma=0.695
+  stats size=128x128, coverage=0.175, bbox=x32-84 y41-116, outline_dark_frac=1.0, outline_px=5.0, colours=30, mean_luma=0.441
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Female_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -52,7 +52,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.316, bbox=x32-95 y23-120, outline_dark_frac=1.0, outline_px=4.0, colours=35, mean_luma=0.68
+  stats size=128x128, coverage=0.195, bbox=x36-91 y41-116, outline_dark_frac=1.0, outline_px=4.0, colours=27, mean_luma=0.424
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Female_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -62,7 +62,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.195, bbox=x40-87 y29-114, outline_dark_frac=1.0, outline_px=4.0, colours=57, mean_luma=0.824
+  stats size=128x128, coverage=0.151, bbox=x40-87 y41-111, outline_dark_frac=1.0, outline_px=4.0, colours=58, mean_luma=0.604
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Thin_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -72,7 +72,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.183, bbox=x39-80 y28-114, outline_dark_frac=1.0, outline_px=4.0, colours=43, mean_luma=0.69
+  stats size=128x128, coverage=0.125, bbox=x39-78 y41-110, outline_dark_frac=1.0, outline_px=4.0, colours=30, mean_luma=0.589
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Thin_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -82,7 +82,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.191, bbox=x40-87 y29-114, outline_dark_frac=1.0, outline_px=4.0, colours=35, mean_luma=0.651
+  stats size=128x128, coverage=0.157, bbox=x40-87 y40-111, outline_dark_frac=1.0, outline_px=3.5, colours=27, mean_luma=0.567
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Thin_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -93,7 +93,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.609, bbox=x5-120 y12-127, outline_dark_frac=0.852, outline_px=4.0, colours=75, mean_luma=0.839
+  stats size=128x128, coverage=0.366, bbox=x22-104 y33-127, outline_dark_frac=1.0, outline_px=4.0, colours=79, mean_luma=0.651
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Hulk_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -104,7 +104,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.49, bbox=x23-102 y12-127, outline_dark_frac=0.854, outline_px=4.0, colours=66, mean_luma=0.726
+  stats size=128x128, coverage=0.322, bbox=x23-98 y32-127, outline_dark_frac=1.0, outline_px=4.0, colours=31, mean_luma=0.651
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Hulk_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -115,7 +115,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.6, bbox=x5-120 y12-127, outline_dark_frac=0.877, outline_px=4.0, colours=41, mean_luma=0.711
+  stats size=128x128, coverage=0.367, bbox=x22-104 y33-127, outline_dark_frac=1.0, outline_px=4.0, colours=30, mean_luma=0.555
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Hulk_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -125,7 +125,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.552, bbox=x10-114 y21-121, outline_dark_frac=1.0, outline_px=4.0, colours=82, mean_luma=0.838
+  stats size=128x128, coverage=0.36, bbox=x19-105 y35-119, outline_dark_frac=1.0, outline_px=4.0, colours=73, mean_luma=0.68
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Fat_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -135,7 +135,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.506, bbox=x14-107 y21-122, outline_dark_frac=1.0, outline_px=4.0, colours=61, mean_luma=0.719
+  stats size=128x128, coverage=0.342, bbox=x19-103 y35-117, outline_dark_frac=1.0, outline_px=5.0, colours=31, mean_luma=0.645
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Fat_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -145,7 +145,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.541, bbox=x10-114 y21-121, outline_dark_frac=1.0, outline_px=4.0, colours=46, mean_luma=0.716
+  stats size=128x128, coverage=0.353, bbox=x20-106 y36-116, outline_dark_frac=1.0, outline_px=4.0, colours=30, mean_luma=0.556
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_Fat_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -155,7 +155,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.523, bbox=x11-115 y18-126, outline_dark_frac=1.0, outline_px=4.0, colours=79, mean_luma=0.831, aspect=0.96
+  stats size=128x128, coverage=0.353, bbox=x22-104 y32-121, outline_dark_frac=1.0, outline_px=4.0, colours=79, mean_luma=0.669, aspect=0.92
 == output/apparel/BionicAssaultArmor/BionicAssaultArmor_m.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -165,7 +165,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.141, bbox=x37-90 y36-91, outline_dark_frac=1.0, outline_px=4.0, colours=53, mean_luma=0.752
+  stats size=128x128, coverage=0.138, bbox=x39-88 y36-91, outline_dark_frac=1.0, outline_px=4.0, colours=50, mean_luma=0.831
 == output/apparel/BionicAssaultArmor/BionicAssaultHelmet_southm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -175,7 +175,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.153, bbox=x37-94 y36-90, outline_dark_frac=1.0, outline_px=4.0, colours=32, mean_luma=0.764
+  stats size=128x128, coverage=0.149, bbox=x35-92 y37-90, outline_dark_frac=1.0, outline_px=4.0, colours=38, mean_luma=0.636
 == output/apparel/BionicAssaultArmor/BionicAssaultHelmet_eastm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -185,7 +185,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.139, bbox=x39-88 y36-91, outline_dark_frac=1.0, outline_px=4.0, colours=34, mean_luma=0.796
+  stats size=128x128, coverage=0.139, bbox=x39-88 y36-91, outline_dark_frac=1.0, outline_px=4.0, colours=39, mean_luma=0.597
 == output/apparel/BionicAssaultArmor/BionicAssaultHelmet_northm.png
   ok    power-of-two size
   ok    mask has coloured region
@@ -195,7 +195,7 @@
   ok    power-of-two size
   ok    transparent pixels are black
   ok    continuous dark outline
-  stats size=128x128, coverage=0.231, bbox=x30-97 y27-98, outline_dark_frac=1.0, outline_px=4.0, colours=54, mean_luma=0.752, aspect=0.94
+  stats size=128x128, coverage=0.227, bbox=x32-95 y28-98, outline_dark_frac=1.0, outline_px=4.0, colours=55, mean_luma=0.842, aspect=0.9
 == output/apparel/BionicAssaultArmor/BionicAssaultHelmet_m.png
   ok    power-of-two size
   ok    mask has coloured region

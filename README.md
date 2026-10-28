@@ -49,14 +49,19 @@ the vanilla recipe**:
      lines.
    - It adds contact-shadow occlusion where parts overlap.
    - Transparent pixels keep black RGB, so no white halo appears after compression.
-4. **3D form proxies for apparel** (`rwtex/form.py`, `rwtex/archetypes/armor3d.py`).
-   - Each body type has an elliptic-cylinder torso fitted to its south and east silhouettes.
-     Helmets sit on an ellipsoid head.
-   - Armor plates are authored as surface patches and projected into each view, so horizontals
-     bow and the neck ring is foreshortened. Side planes narrow, and back-facing parts disappear.
-   - Facets are flat-shaded from real normals with vanilla's quantised tones: white fronts, grey
-     sides and backs, dark undersides.
-   - One design fits all 5 body types × 3 directions.
+4. **3D form proxies for apparel, calibrated on vanilla** (`rwtex/form.py`,
+   `rwtex/archetypes/armor3d.py`).
+   - Each body type's torso follows its measured south and east silhouettes. Helmets sit on an
+     ellipsoid head.
+   - Plates are authored as surface patches and projected into each view, so horizontals bow
+     and the neck ring is foreshortened. Back-facing parts disappear, and the belt runs diagonally
+     in the east view because it sits lower at the front.
+   - Outlines are straightened into facets, and every face gets one flat vanilla value: white at
+     the front, #ccc on the sides and back, near-black for the exposed undersuit.
+   - Shell silhouettes and plate heights follow offsets measured from vanilla PowerArmor for
+     each body type (`rwtex/data/armor_fit.json`), so one design fits all 5 body types × 3
+     directions the way vanilla does.
+   - Visor openings are real holes that show the pawn's face.
 5. **Outputs** (`rwtex/export.py`, `rwtex/preview.py`, `rwtex/lint.py`):
    - PNGs, plus `_m` / `southm` masks for CutoutComplex.
    - SVGs.
@@ -115,7 +120,8 @@ docs/                   style guide, mod styles, lexicon, archetype reference, w
   - The colours and dimensions in the docs and materials were measured from the official art
     source, the game textures and mod pages.
   - `rwtex/data/templates.json` stores only row extents of the vanilla body and head
-    silhouettes, which are measurements, not pixels.
+    silhouettes, and `rwtex/data/armor_fit.json` stores per-row offsets and plate heights measured
+    on vanilla armor. Both are measurements, not pixels.
   - Preview pawns are synthetic shapes drawn from those extents.
 - RimWorld is © Ludeon Studios. Dead Man's Switch, EPOE-Forked, Vanilla Expanded and Bionic
   Icons (MIT, AUTOMATIC1111) belong to their authors. They are cited here as style references only.

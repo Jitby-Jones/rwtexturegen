@@ -86,12 +86,12 @@ One design renders **5 body types × 3 directions + a ground icon**, and a mask 
 
 | parameter | values |
 |---|---|
-| `design` | 3D-form designs (perspective-correct, recommended): `marine`, `recon`, `cataphract`, `bionic`. Older 2D designs: `plate`, `tribal`, `flak`, `monolith`, `exo`. |
+| `design` | Vanilla-construction designs on the 3D form (recommended): `marine`, `recon` (slimmer, V collar), `cataphract` (bulkier, gorget, broad flanks), `bionic` (muscle-fibre undersuit, bionic spine, power core, joint caps). Older 2D designs: `plate`, `tribal`, `flak`, `monolith`, `exo`. |
 | `mats` | A role map. Roles are `shell`, `undersuit`, `strap`, `accent`, `trim`, `energy`, `joint` and `lens`. |
 | `mask_roles` | The roles masked red for stuff or ideology tint. The default is `('shell',)`; pass `()` for an unmasked armor. |
 | `body_types`, `dirs` | Subsets to render. All are rendered by default. |
 | `ground`, `ground_scale` (1.3), `ground_body` (`Male`) | Ground icon settings. |
-| design options | `fibers: true` (DMS muscle-fibre undersuit, for marine and cataphract), `fins: false` (cataphract), `glow: false` (bionic: no cyan nodes), `trim_gold: true`, `spikes: true` |
+| design options | `fibers: true` (DMS muscle-fibre undersuit, for marine and cataphract), `glow: false` (bionic: no cyan nodes), `trim_gold: true` (gold plate trim + laurel), `spikes: true` (shoulder spikes) |
 | `design_fn` | Your own design function `f(c: Ctx)`. See *Custom apparel* below. |
 
 The output files are `Name_<BodyType>_<dir>.png`, plus `Name_<BodyType>_<dir>m.png`, `Name.png`
@@ -101,8 +101,11 @@ and `Name_m.png`.
 
 | parameter | values |
 |---|---|
-| `design` | 3D-form designs: `marine`, `recon`, `cataphract`, `bionic`. Others: `helm` (barrel helm), `ballistic`, `mask` (tribal face plate), `gasmask`, `monolith`. |
+| `design` | Head-form designs: `marine` (top slot, brow V crease, see-through T visor), `recon` (open-face frame, visor bar, antenna, ear module), `cataphract` (closed helm, T slit), `bionic` (closed helm, sensor band, one bionic eye, ear ports, neural port). Others: `helm` (barrel helm), `ballistic`, `mask` (tribal face plate), `gasmask`, `monolith`. |
 | options | `crest: true` (cataphract and imperial), `glow` (bionic) |
+
+Visor openings are real holes: they are transparent and framed by the outline, so the pawn's
+face shows through, as with the vanilla marine helmet.
 
 The output files are `Name_<dir>.png`, plus `Name_<dir>m.png`, `Name.png` and `Name_m.png`.
 
@@ -192,17 +195,35 @@ with a `Ctx` object:
 - `c.m(role)`: the material for a role.
 - `c.front`, `c.side`, `c.back`: which way the view faces.
 
-The perspective-correct helpers are in `rwtex/archetypes/armor3d.py`:
+The vanilla-construction kit is in `rwtex/archetypes/armor3d.py`:
 
-- `splate(c, name, poly_theta_v, z, role, r, cols, rows, ...)` is a plate patch in surface
-  coordinates. `theta` runs around the body (0 = front, +π/2 = the pawn's right side, π = back)
-  and `v` runs down from the shoulders (0) to the bottom (1). The patch is projected into each
-  view and flat-shaded per facet.
-- `slab(c, name, face, z, depth)` is an extruded rigid plate, such as a shoulder pad, whose
-  thickness faces are lit.
-- `sline`, `sjoint`, `collar` and `fibers` add surface lines, bionic joint caps, the neck ring
-  and muscle striations.
-- `hpanel(...)` is the head equivalent, with `(theta, phi)` coordinates.
+- `marine_kit(c, shell_add=0, neck='round'|'gorget'|'v', chest_w=0.9, pauldron_add=0, ...)` builds
+  the whole vanilla marine construction and returns its parts (`shell`, `chest`, `belt`,
+  `pauldron`, `spine`, `node`...) so a variant can decorate them. The parts are:
+  - the shell
+  - the neck ring
+  - the chest plate with chamfer facets
+  - the black belt with its node
+  - the tassets
+  - the north spine plate
+  - the east pauldron
 
-Copy `d3_marine` or `h3_marine` as a starting point, then register the result with
+  Every silhouette follows the vanilla PowerArmor fit for the body type
+  (`rwtex/data/armor_fit.json`).
+- `vplate(c, name, poly, z, role, r, cols, rows, tone, gap, within)` is a plate patch in
+  surface coordinates: `theta` runs around the body (0 = front, +π/2 = the pawn's right side,
+  π = back) and `v` runs down from the shoulders (0) to the bottom (1).
+  - It is projected into each view, straightened into facets, and given one flat value per cell.
+    The default value rule, `vtone`, makes front faces white and the east side and the back #ccc.
+  - `gap` adds the vanilla black-dark-black seam around the plate.
+  - `offr(c, [(v, px), ...])` sets the plate's edge a given number of px beyond the body
+    silhouette.
+  - `edge(front, back)` and `band(...)` build bands that sit lower at the front than at the back.
+- `sline`, `sjoint`, `node` and `fibers` add surface lines, bionic joint caps, round fittings and
+  muscle striations. `bionic_spine` adds the segmented spine.
+- Helmets have `hshell(c, holes=[...])` (the head-silhouette shell, with see-through visor holes
+  given as `(theta, phi)` polygons), `hseam` (seam lines on the dome) and `hplate` (raised plates
+  such as ridges, crests and visor bars).
+
+Copy `d3_bionic` or `h3_marine` as a starting point, then register the result with
 `DESIGNS['name'] = fn` or `HELMET_DESIGNS['name'] = fn`.

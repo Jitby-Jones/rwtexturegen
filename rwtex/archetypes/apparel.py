@@ -121,7 +121,7 @@ def head_frame(dir: str, k: float = 1.0, scale: float = 1.0, center=(64.0, 64.0)
 # ----------------------------------------------------------------------------- painting rules
 
 APPAREL_LIGHT = -90.0          # vanilla apparel reads as lit from straight above (symmetric facets)
-APPAREL_INNER = 2.0            # inner line weight at 128px (vanilla plate seams are heavy)
+APPAREL_INNER = 1.4            # inner line weight at 128px (vanilla seams: black-dark-black ~4 px)
 
 
 def plate_shading(k: float, width: float = 2.6) -> list:
@@ -324,75 +324,6 @@ def _muscle_fibers(c: Ctx, p: Part):
             p.line([f.P(-0.2, v), f.P(0.55, v + 0.03)], 0.9 * k, 'light')
 
 
-def design_marine(c: Ctx):
-    """Vanilla marine grammar: dominant shoulder mantle around the neck hole, V-neck chest
-    plate, dark belt with a node, splayed tassets; light-grey values on side/back views."""
-    f, k, p = c.f, c.k, c.p
-    _undersuit(c, fibers=p.get('fibers', False))
-    if c.front:
-        for t in c.pair_plates('tasset', [(0.16, 0.8), (0.95, 0.77), (1.04, 1.03), (0.28, 1.03)], 3, 1.8):
-            c.panel(t, 2.4)
-        c.plate('codpiece', f.uv([(-0.18, 0.8), (0.18, 0.8), (0.15, 0.99), (-0.15, 0.99)], 1.4), 3.2, bevel=1.6)
-        c.part('belt', f.uv([(-0.88, 0.7), (0.88, 0.7), (0.86, 0.79), (-0.86, 0.79)], 1.0), 'strap', 4, mask=None)
-        c.part('belt_node', f.ellipse(0, 0.745, 0.13, 0.04), 'accent', 4.5, mask=None, shading=[Facets(1.0 * k)])
-        ch = c.plate('chest', f.uv([(-0.8, 0.22), (-0.2, 0.28), (0.0, 0.4), (0.2, 0.28), (0.8, 0.22), (0.74, 0.52), (0.0, 0.62), (-0.74, 0.52)], 2.2), 6)
-        c.panel(ch, 2.6)
-        m = c.plate('mantle', f.uv([(-0.95, -0.05), (0.95, -0.05), (1.3, 0.07), (1.34, 0.3), (0.6, 0.36), (0.26, 0.25), (-0.26, 0.25),
-                                    (-0.6, 0.36), (-1.34, 0.3), (-1.3, 0.07)], 2.8), 8)
-        c.panel(m, 3.2)
-        _collar(c)
-    elif c.side:
-        c.plate('backplate', f.uv([(-1.08, 0.06), (-0.3, 0.02), (-0.26, 0.62), (-1.02, 0.66)], 2.0), 4, facing='back')
-        th = c.plate('thigh', f.uv([(-0.15, 0.79), (0.96, 0.76), (1.03, 1.03), (-0.08, 1.03)], 2.0), 4, facing='side')
-        c.panel(th, 2.4)
-        c.part('belt', f.uv([(-1.0, 0.68), (1.04, 0.68), (1.02, 0.77), (-0.98, 0.77)], 0.8), 'strap', 5, mask=None)
-        ch = c.plate('chest', f.uv([(-0.05, 0.08), (1.1, 0.14), (1.14, 0.42), (1.0, 0.6), (0.0, 0.62)], 2.2), 6, facing='front')
-        c.panel(ch, 2.6)
-        pd = c.plate('pauldron', f.uv([(-0.66, -0.12), (0.52, -0.12), (0.8, 0.06), (0.82, 0.3), (0.52, 0.47), (-0.42, 0.47), (-0.74, 0.3), (-0.78, 0.04)], 3.0), 9, facing='side')
-        c.panel(pd, 3.0)
-    else:
-        for t in c.pair_plates('tasset', [(0.16, 0.8), (0.95, 0.77), (1.04, 1.03), (0.28, 1.03)], 3, 1.8):
-            c.panel(t, 2.4)
-        c.part('belt', f.uv([(-0.88, 0.7), (0.88, 0.7), (0.86, 0.79), (-0.86, 0.79)], 1.0), 'strap', 4, mask=None)
-        for t in c.pair_plates('backside', [(0.12, 0.34), (0.86, 0.3), (0.82, 0.66), (0.14, 0.68)], 5, 2.0):
-            c.panel(t, 2.4)
-        pk = c.part('pack', f.uv([(-0.34, 0.34), (0.34, 0.34), (0.3, 0.64), (-0.3, 0.64)], 2.0), 'accent', 6, mask=None,
-                    shading=[Facets(1.6 * k)])
-        pk.detail(*C.vent_slots(*f.P(-0.22, 0.42), *f.P(0.22, 0.5), 4, k))
-        m = c.plate('mantle', f.uv([(-0.95, -0.05), (0.95, -0.05), (1.3, 0.07), (1.34, 0.3), (0.95, 0.36), (-0.95, 0.36), (-1.34, 0.3), (-1.3, 0.07)], 2.8), 8)
-        for side in (-1, 1):
-            m.line([f.P(side * 0.4, -0.03), f.P(side * 0.48, 0.34)], 1.1 * k, 'deep')
-
-
-def design_cataphract(c: Ctx):
-    """Heavy ultratech grammar: high pauldrons, back fins, smooth shells, glowing seams."""
-    f, k, p = c.f, c.k, c.p
-    _undersuit(c, fibers=p.get('fibers', False))
-    fin = p.get('fins', True)
-    if c.side:
-        if fin:
-            c.part('fin', f.uv([(-0.95, -0.25), (-0.62, -0.32), (-0.55, 0.3), (-0.95, 0.3)], 2.0, 'round'), 'shell', 2)
-        c.part('backplate', f.uv([(-1.15, 0.05), (-0.3, 0.0), (-0.25, 0.62), (-1.1, 0.68)], 3.0, 'round'), 'shell', 5)
-        c.part('chest', f.uv([(-0.05, 0.05), (1.15, 0.1), (1.12, 0.6), (0.0, 0.64)], 3.0, 'round'), 'shell', 6)
-        c.part('pauldron', f.uv([(-0.75, -0.12), (0.7, -0.08), (0.78, 0.33), (0.0, 0.46), (-0.8, 0.32)], 5.0, 'round'), 'shell', 9)
-        c.part('thigh', f.uv([(-0.25, 0.72), (1.0, 0.7), (0.95, 1.03), (-0.2, 1.03)], 2.5, 'round'), 'shell', 4)
-    elif c.front:
-        if fin:
-            c.pair('fin', [(0.32, -0.32), (0.62, -0.32), (0.66, 0.1), (0.3, 0.1)], 'shell', 1, 2.5, 'round')
-        c.part('chest', f.uv([(-0.84, 0.18), (0.84, 0.18), (0.76, 0.58), (0.0, 0.64), (-0.76, 0.58)], 3.0, 'round'), 'shell', 5)
-        c.pair('pauldron', [(0.22, -0.1), (1.32, -0.06), (1.36, 0.32), (1.0, 0.4), (0.5, 0.3), (0.22, 0.16)], 'shell', 8, 3.5, 'round')
-        c.pair('thigh', [(0.1, 0.7), (1.0, 0.7), (0.95, 1.03), (0.16, 1.03)], 'shell', 4, 2.5, 'round')
-        c.part('belt', f.uv([(-0.78, 0.62), (0.78, 0.62), (0.75, 0.7), (-0.75, 0.7)], 1.0), 'strap', 3.5, mask=None)
-        _collar(c)
-    else:
-        if fin:
-            c.pair('fin', [(0.3, -0.34), (0.62, -0.34), (0.66, 0.2), (0.3, 0.2)], 'shell', 9, 2.5, 'round')
-        c.part('back', f.uv([(-0.9, 0.1), (0.9, 0.1), (0.84, 0.64), (-0.84, 0.64)], 3.5, 'round'), 'shell', 5)
-        c.pair('pauldron', [(0.22, -0.1), (1.32, -0.06), (1.36, 0.32), (1.0, 0.4), (0.5, 0.3), (0.22, 0.16)], 'shell', 8, 3.5, 'round')
-        c.pair('thigh', [(0.1, 0.72), (1.0, 0.72), (0.95, 1.03), (0.16, 1.03)], 'shell', 4, 2.5, 'round')
-        _collar(c)
-
-
 def design_plate(c: Ctx):
     """Medieval plate: overlapping lames with rivets and leather straps (stuff-tinted)."""
     f, k = c.f, c.k
@@ -494,83 +425,6 @@ def design_exo(c: Ctx):
         _collar(c)
 
 
-def design_bionic(c: Ctx):
-    """Bionic assault suit: marine mantle + recon segmented abdomen + cataphract-height
-    pauldrons over an artificial-muscle undersuit (DMS bionic suit), with exposed bionic
-    joints (vanilla bionic-eye palette), a segmented bionic spine and a chest power core."""
-    f, k, p = c.f, c.k, c.p
-    glow = p.get('glow', True)
-    _undersuit(c, fibers=True)
-    if c.front:
-        for t in c.pair_plates('tasset', [(0.2, 0.81), (0.96, 0.78), (1.04, 1.03), (0.3, 1.03)], 3, 1.8):
-            c.panel(t, 2.4)
-        c.plate('codpiece', f.uv([(-0.16, 0.81), (0.16, 0.81), (0.13, 0.98), (-0.13, 0.98)], 1.4), 3.2, bevel=1.6)
-        c.part('belt', f.uv([(-0.88, 0.71), (0.88, 0.71), (0.86, 0.79), (-0.86, 0.79)], 1.0), 'strap', 4, mask=None, shading=[Facets(1.2 * k)])
-        node = c.part('belt_node', f.ellipse(0, 0.75, 0.12, 0.035), 'joint', 4.5, mask=None, shading=[Facets(1.0 * k)])
-        node.detail(Fill([f.ellipse(0, 0.75, 0.06, 0.018)], 'energy.base', mask=None))
-        for i in range(2):
-            v0 = 0.575 + i * 0.07
-            c.plate(f'abs{i}', f.uv([(-0.38, v0), (0.38, v0), (0.34, v0 + 0.055), (-0.34, v0 + 0.055)], 1.0), 5, dome=False, bevel=1.4)
-        ch = c.plate('chest', f.uv([(-0.78, 0.22), (-0.22, 0.28), (0.0, 0.4), (0.22, 0.28), (0.78, 0.22), (0.72, 0.5), (0.0, 0.58), (-0.72, 0.5)], 2.2), 6)
-        c.panel(ch, 2.6)
-        if glow:
-            for side in (-1, 1):
-                ch.line([f.P(side * 0.62, 0.3), f.P(side * 0.58, 0.47)], 1.0 * k, 'energy.base', mask=None)
-        core = c.part('core', f.ellipse(0, 0.345, 0.15, 0.045), 'joint', 7, mask=None,
-                      shading=[Dome(('light', 'base', 'shade'), (-0.3, -0.4), 1.1), Facets(1.0 * k)])
-        core.detail(Fill([f.ellipse(0, 0.345, 0.09, 0.027)], 'energy.base', mask=None),
-                    Fill([f.ellipse(-0.025, 0.338, 0.035, 0.011)], 'energy.light', mask=None))
-        m = c.plate('mantle', f.uv([(-0.95, -0.06), (0.95, -0.06), (1.34, 0.05), (1.4, 0.3), (0.62, 0.36), (0.28, 0.26), (-0.28, 0.26),
-                                    (-0.62, 0.36), (-1.4, 0.3), (-1.34, 0.05)], 2.8), 8)
-        c.panel(m, 3.2)
-        for side in (-1, 1):
-            c.joint(f'shoulder_joint_{"r" if side > 0 else "l"}', side * 1.08, 0.19, 0.16, 9)
-            c.joint(f'hip_joint_{"r" if side > 0 else "l"}', side * 0.66, 0.75, 0.15, 6)
-        _collar(c)
-    elif c.side:
-        sp = c.part('spine', f.uv([(-1.22, -0.04), (-0.86, -0.06), (-0.82, 0.86), (-1.12, 0.88)], 2.0), 'accent', 2, mask=None,
-                    shading=[Facets(1.4 * k)])
-        for i, v in enumerate(np.arange(0.02, 0.82, 0.095)):
-            sp.detail(Fill([G.chamfer(G.rect(*f.P(-1.15, v), *f.P(-0.9, v + 0.06)), 0.8 * k)], 'trim.base',
-                           shading=[Facets(0.8 * k, ('trim.light', 'trim.base', 'trim.shade', 'trim.deep'), (0.5, 0.15, -0.7))]))
-            if glow and i % 2 == 1:
-                sp.detail(Fill([G.circle(*f.P(-1.02, v + 0.03), 0.9 * k)], 'energy.base', mask=None))
-        c.plate('backplate', f.uv([(-0.92, 0.06), (-0.3, 0.02), (-0.26, 0.6), (-0.88, 0.64)], 2.0), 4, facing='back')
-        th = c.plate('thigh', f.uv([(-0.12, 0.8), (0.96, 0.77), (1.03, 1.03), (-0.05, 1.03)], 2.0), 4, facing='side')
-        c.panel(th, 2.4)
-        c.part('belt', f.uv([(-0.84, 0.69), (1.04, 0.69), (1.02, 0.77), (-0.82, 0.77)], 0.8), 'strap', 5, mask=None, shading=[Facets(1.0 * k)])
-        for i in range(2):
-            v0 = 0.56 + i * 0.065
-            c.plate(f'abs{i}', f.uv([(0.36, v0), (1.03, v0), (0.99, v0 + 0.05), (0.39, v0 + 0.05)], 1.0), 5.5, facing='front', dome=False, bevel=1.4)
-        ch = c.plate('chest', f.uv([(-0.05, 0.08), (1.1, 0.14), (1.15, 0.4), (1.0, 0.52), (0.0, 0.55)], 2.2), 6, facing='front')
-        c.panel(ch, 2.6)
-        if glow:
-            ch.line([f.P(0.35, 0.44), f.P(0.95, 0.42)], 1.0 * k, 'energy.base', mask=None)
-        c.joint('hip_joint', 0.3, 0.75, 0.2, 6.5)
-        pd = c.plate('pauldron', f.uv([(-0.66, -0.16), (0.5, -0.16), (0.8, 0.04), (0.82, 0.3), (0.52, 0.48), (-0.42, 0.48), (-0.74, 0.3), (-0.78, 0.02)], 3.0), 9, facing='side')
-        c.panel(pd, 3.0)
-        c.joint('shoulder_joint', 0.02, 0.17, 0.2, 10)
-    else:
-        for t in c.pair_plates('tasset', [(0.2, 0.81), (0.96, 0.78), (1.04, 1.03), (0.3, 1.03)], 3, 1.8):
-            c.panel(t, 2.4)
-        c.part('belt', f.uv([(-0.88, 0.71), (0.88, 0.71), (0.86, 0.79), (-0.86, 0.79)], 1.0), 'strap', 4, mask=None, shading=[Facets(1.2 * k)])
-        for t in c.pair_plates('backside', [(0.22, 0.34), (0.86, 0.3), (0.82, 0.66), (0.24, 0.68)], 5, 2.0):
-            c.panel(t, 2.4)
-        m = c.plate('mantle', f.uv([(-0.95, -0.06), (0.95, -0.06), (1.34, 0.05), (1.4, 0.3), (0.95, 0.36), (-0.95, 0.36), (-1.4, 0.3), (-1.34, 0.05)], 2.8), 8)
-        for side in (-1, 1):
-            m.line([f.P(side * 0.42, -0.04), f.P(side * 0.5, 0.34)], 1.1 * k, 'deep')
-        sp = c.part('spine', f.uv([(-0.19, 0.0), (0.19, 0.0), (0.17, 0.88), (-0.17, 0.88)], 2.0), 'accent', 9, mask=None,
-                    shading=[Facets(1.4 * k)])
-        for i, v in enumerate(np.arange(0.04, 0.84, 0.095)):
-            sp.detail(Fill([G.chamfer(G.rect(*f.P(-0.15, v), *f.P(0.15, v + 0.058)), 0.8 * k)], 'trim.base',
-                           shading=[Facets(0.8 * k, ('trim.light', 'trim.base', 'trim.shade', 'trim.deep'), (0.5, 0.15, -0.7))]))
-            if glow and i % 2 == 0:
-                sp.detail(Fill([G.circle(*f.P(0, v + 0.029), 0.9 * k)], 'energy.base', mask=None))
-        for side in (-1, 1):
-            c.joint(f'shoulder_joint_{"r" if side > 0 else "l"}', side * 1.08, 0.19, 0.16, 10)
-            c.joint(f'hip_joint_{"r" if side > 0 else "l"}', side * 0.66, 0.75, 0.15, 6)
-
-
 def _resolve_roles(c: Ctx) -> None:
     """Rewrite role-based tone references in details/shading to concrete materials."""
     from ..render import Bevel as _B, Split as _S, Gradient as _Gr, Rim as _R
@@ -595,20 +449,20 @@ def _fix_op(c: Ctx, op) -> None:
         op.tones = tuple(c.tone(t) for t in op.tones)
 
 
+# marine / recon / cataphract / bionic are registered by armor3d (perspective-correct 3D-form designs)
 DESIGNS: Dict[str, Callable[[Ctx], None]] = {
-    'marine': design_marine, 'cataphract': design_cataphract, 'plate': design_plate, 'tribal': design_tribal,
-    'flak': design_flak, 'monolith': design_monolith, 'exo': design_exo, 'bionic': design_bionic,
+    'plate': design_plate, 'tribal': design_tribal, 'flak': design_flak, 'monolith': design_monolith, 'exo': design_exo,
 }
 
 
 def _post(c: Ctx):
-    """Style-level decorations applied after the design."""
+    """Style-level decorations applied after the design (imperial gold trim, anomaly spikes)."""
     k = c.k
     if c.p.get('trim_gold'):
         for p in list(c.scene.parts):
-            if p.name.startswith('pauldron') and not c.side:
+            if p.name in ('chest', 'backplate', 'pauldron') or p.name.startswith('pauldron'):
                 x0, y0, x1, y1 = p.bbox()
-                p.detail(Fill([G.rect(x0, y1 - 2.6 * k, x1, y1)], 'imperial_gold.base', mask=None,
+                p.detail(Fill([G.rect(x0, y1 - 2.6 * k, x1, y1 + 1.0)], 'imperial_gold.base', mask=None,
                               shading=[Bevel(0.6 * k, 0.6 * k, light_tone='imperial_gold.light', shade_tone='imperial_gold.shade')]))
         if not c.side:
             fan = []
@@ -618,11 +472,21 @@ def _post(c: Ctx):
                 fan.append(G.rotate(G.capsule(cx, cy - 4 * k, cx, cy + 4 * k, 1.8 * k), u * 30, cx, cy + 4 * k))
             c.part('laurel', fan, 'imperial_gold', -1, shading=[Bevel(0.6 * k, 0.6 * k)], mask=None)
     if c.p.get('spikes'):
-        for p in list(c.scene.parts):
-            if p.name.startswith(('yoke', 'pauldron')):
-                x0, y0, x1, y1 = p.bbox()
-                c.part(p.name + '_spike', G.poly([(x0 + 2 * k, y0 + 2 * k), ((x0 + x1) / 2, y0 - 5 * k), (x1 - 2 * k, y0 + 2 * k)]), 'trim', p.z - 0.5,
-                       mask=None)
+        form = c.form
+        if form is not None and hasattr(form, 'P') and not hasattr(form, 'rx'):   # torso form
+            thetas = {'south': (1.4, -1.4), 'north': (3.14159 - 1.4, 3.14159 + 1.4), 'east': (2.3, 1.3)}[c.dir]
+            cx = (form.d if c.dir == 'east' else form.a)(0.28)[0]
+            for i, th in enumerate(thetas):
+                x, y = form.P(c.dir, th, 0.28, 1.06)
+                out = -1 if x < cx else 1
+                c.part(f'spike{i}', G.poly([(x - out * 1.0 * k, y - 3.5 * k), (x + out * 8.5 * k, y - 9.5 * k), (x + out * 1.5 * k, y + 3.5 * k)]),
+                       'trim', 9, mask=None)
+        else:
+            for p in list(c.scene.parts):
+                if p.name.startswith(('yoke', 'pauldron')):
+                    x0, y0, x1, y1 = p.bbox()
+                    c.part(p.name + '_spike', G.poly([(x0 + 2 * k, y0 + 2 * k), ((x0 + x1) / 2, y0 - 5 * k), (x1 - 2 * k, y0 + 2 * k)]),
+                           'trim', p.z - 0.5, mask=None)
 
 
 def _forms():
@@ -689,111 +553,6 @@ HELMET_STYLE = {
 }
 
 
-def _shell(c: Ctx, expand: float = -1.2, z: float = 5) -> Part:
-    """Helmet shell that follows the round head silhouette (never a box)."""
-    return c.plate('shell', c.f.silhouette(expand), z, bevel=2.4)
-
-
-def _ridge(c: Ctx, v1: float = 0.34, z: float = 6) -> Part:
-    f, k = c.f, c.k
-    r = c.plate('ridge', f.uv([(-0.15, -0.08), (0.15, -0.08), (0.12, v1), (-0.12, v1)], 1.2), z, dome=False, bevel=1.4)
-    r.detail(Fill([G.rounded(G.rect(*f.P(-0.08, 0.02), *f.P(0.08, 0.1)), 0.8 * k)], 'deep'))
-    return r
-
-
-def helm_marine(c: Ctx):
-    """Vanilla marine-helmet grammar: round shell, centre ridge, angular dark visor, chin guard."""
-    f, k = c.f, c.k
-    sh = _shell(c)
-    if c.front:
-        _ridge(c)
-        c.part('visor', f.uv([(-0.8, 0.42), (-0.22, 0.44), (0.0, 0.53), (0.22, 0.44), (0.8, 0.42), (0.72, 0.63), (0.24, 0.67), (0.0, 0.61),
-                              (-0.24, 0.67), (-0.72, 0.63)], 1.0), 'accent', 7, mask=None,
-               shading=[Facets(1.4 * k, ('accent.light', 'accent.base', 'accent.shade', 'accent.deep'), (0.5, 0.15, -0.7))])
-        sh.line([f.P(-0.5, 0.36), f.P(0.0, 0.4), f.P(0.5, 0.36)], 1.0 * k, 'deep')
-        sh.line([f.P(0.0, 0.7), f.P(0.0, 0.92)], 1.0 * k, 'deep')
-        for u in (-0.36, 0.36):
-            sh.fill(G.rounded(G.rect(*f.P(u - 0.1, 0.78), *f.P(u + 0.1, 0.84)), 0.6 * k), 'deep')
-    elif c.side:
-        c.part('visor', f.uv([(0.35, 0.42), (1.06, 0.44), (1.04, 0.62), (0.5, 0.64)], 1.2), 'accent', 7, mask=None,
-               shading=[Facets(1.2 * k, ('accent.light', 'accent.base', 'accent.shade', 'accent.deep'), (0.5, 0.15, -0.7))])
-        sh.line([f.P(0.55, -0.02), f.P(0.1, 0.25), f.P(-0.35, 0.62), f.P(-0.45, 0.95)], 1.1 * k, 'deep')
-        cap = c.plate('earcap', f.ellipse(-0.08, 0.56, 0.2, 0.08), 7, facing='side', dome=False, bevel=1.4)
-        cap.detail(Fill([f.ellipse(-0.08, 0.56, 0.09, 0.036)], 'deep'))
-    else:
-        _ridge(c, v1=0.6)
-        sh.line([f.P(-0.8, 0.66), f.P(0.8, 0.66)], 1.0 * k, 'deep')
-
-
-def helm_cataphract(c: Ctx):
-    """Ultratech heavy helm: round shell, raised brow, single visor slit, jaw guard (+ imperial crest)."""
-    f, k = c.f, c.k
-    sh = _shell(c, expand=-0.6)
-    if c.p.get('crest'):
-        if c.side:
-            c.part('crest', f.uv([(-0.15, -0.44), (0.12, -0.44), (0.02, -0.02), (-0.95, 0.42), (-1.05, 0.3)], 2.0, 'round'), 'trim', 4.5, mask=None)
-        else:
-            c.part('crest', f.uv([(-0.13, -0.42), (0.13, -0.42), (0.12, 0.3), (-0.12, 0.3)], 1.5, 'round'), 'trim', 6.5, mask=None)
-    if c.front:
-        brow = c.plate('brow', f.uv([(-0.9, 0.3), (0.9, 0.3), (0.84, 0.42), (-0.84, 0.42)], 1.4), 6, dome=False, bevel=1.4)
-        c.part('slit', f.uv([(-0.78, 0.44), (0.78, 0.44), (0.74, 0.52), (-0.74, 0.52)], 0.8), 'accent', 6.5, mask=None, shading=[])
-        jaw = c.plate('jaw', f.uv([(-0.62, 0.58), (0.62, 0.58), (0.46, 0.98), (-0.46, 0.98)], 2.4), 7, bevel=2.0)
-        jaw.line([f.P(0.0, 0.62), f.P(0.0, 0.94)], 1.0 * k, 'deep')
-    elif c.side:
-        c.plate('brow', f.uv([(0.1, 0.3), (1.08, 0.32), (1.06, 0.42), (0.1, 0.42)], 1.4), 6, facing='front', dome=False, bevel=1.4)
-        c.part('slit', f.uv([(0.45, 0.44), (1.1, 0.46), (1.08, 0.53), (0.45, 0.52)], 0.8), 'accent', 6.5, mask=None, shading=[])
-        c.plate('jaw', f.uv([(0.12, 0.58), (1.04, 0.6), (0.94, 0.98), (0.12, 0.95)], 2.4), 7, facing='front', bevel=2.0)
-        sh.line([f.P(0.4, -0.02), f.P(-0.2, 0.3), f.P(-0.55, 0.62)], 1.1 * k, 'deep')
-    else:
-        sh.line([f.P(-0.8, 0.62), f.P(0.8, 0.62)], 1.0 * k, 'deep')
-        sh.line([f.P(0.0, -0.02), f.P(0.0, 0.6)], 1.0 * k, 'deep')
-
-
-def helm_bionic(c: Ctx):
-    """Bionic helm: round shell, smooth faceplate with a dark sensor band, one bionic eye
-    (vanilla bionic-eye palette: light plate, black ring, teal lens), neural port at the back."""
-    f, k, p = c.f, c.k, c.p
-    glow = p.get('glow', True)
-    sh = _shell(c)
-
-    def eye(u, v, r, z):
-        ry = r * f.hw_ref / f.H
-        e = c.part('eye_plate', f.ellipse(u, v, r * 1.25, ry * 1.25), 'joint', z,
-                   shading=[Dome(('light', 'base', 'shade'), (-0.3, -0.45), 1.15), Facets(1.0 * k)], mask=None)
-        e.detail(Fill([f.ellipse(u, v, r * 0.85, ry * 0.85)], 'black', mask=None),
-                 Fill([f.ellipse(u, v, r * 0.58, ry * 0.58)], 'lens.base', mask=None),
-                 Fill([f.ellipse(u - r * 0.2, v - ry * 0.22, r * 0.18, ry * 0.18)], 'energy.light', mask=None))
-        return e
-
-    if c.front:
-        _ridge(c, v1=0.3)
-        face = c.plate('face', f.uv([(-0.8, 0.36), (0.8, 0.36), (0.8, 0.64), (0.42, 0.98), (-0.42, 0.98), (-0.8, 0.64)], 3.0), 6.5, bevel=2.0)
-        c.panel(face, 2.2)
-        band = c.part('band', f.uv([(-0.86, 0.42), (0.86, 0.42), (0.82, 0.54), (-0.82, 0.54)], 1.2), 'accent', 7, mask=None,
-                      shading=[Facets(1.0 * k, ('accent.light', 'accent.base', 'accent.shade', 'accent.deep'), (0.5, 0.15, -0.7))])
-        if glow:
-            band.line([f.P(-0.74, 0.48), f.P(0.12, 0.48)], 1.0 * k, 'energy.base', mask=None)
-        eye(0.44, 0.48, 0.2, 8)
-        for i, u in enumerate((-0.2, 0.0, 0.2)):
-            face.fill(G.rounded(G.rect(*f.P(u - 0.06, 0.76), *f.P(u + 0.06, 0.88)), 0.6 * k), 'deep')
-    elif c.side:
-        face = c.plate('face', f.uv([(0.18, 0.36), (1.08, 0.38), (1.08, 0.66), (0.86, 0.98), (0.2, 0.96)], 3.0), 6.5, facing='front', bevel=2.0)
-        c.panel(face, 2.2)
-        band = c.part('band', f.uv([(0.1, 0.42), (1.12, 0.44), (1.1, 0.55), (0.1, 0.54)], 1.0), 'accent', 7, mask=None,
-                      shading=[Facets(1.0 * k, ('accent.light', 'accent.base', 'accent.shade', 'accent.deep'), (0.5, 0.15, -0.7))])
-        eye(0.82, 0.49, 0.19, 8)
-        c.joint('earport', -0.32, 0.56, 0.2, 7.5)
-        sh.line([f.P(0.5, -0.02), f.P(-0.1, 0.22), f.P(-0.62, 0.42)], 1.1 * k, 'deep')
-    else:
-        _ridge(c, v1=0.56)
-        port = c.part('port', f.uv([(-0.3, 0.58), (0.3, 0.58), (0.26, 1.02), (-0.26, 1.02)], 2.0), 'accent', 7, mask=None,
-                      shading=[Facets(1.4 * k)])
-        for i, v in enumerate((0.64, 0.76, 0.88)):
-            port.detail(Fill([G.chamfer(G.rect(*f.P(-0.2, v), *f.P(0.2, v + 0.07)), 0.7 * k)], 'trim.base'))
-            if glow and i == 1:
-                port.detail(Fill([G.circle(*f.P(0, v + 0.035), 0.9 * k)], 'energy.base', mask=None))
-
-
 def helm_simple(c: Ctx, kind: str):
     f, k = c.f, c.k
     if kind == 'helm':  # medieval barrel helm: flat-topped but follows the head width
@@ -845,8 +604,8 @@ def helm_simple(c: Ctx, kind: str):
         c.part('float', f.uv([(-0.35, -0.42), (0.35, -0.42), (0.35, -0.3), (-0.35, -0.3)], 0.3), 'trim', 7, mask=None, shading=[Bevel(0.8 * k, 0.8 * k)])
 
 
-HELMET_DESIGNS = {'marine': helm_marine, 'cataphract': helm_cataphract, 'bionic': helm_bionic,
-                  'helm': lambda c: helm_simple(c, 'helm'), 'ballistic': lambda c: helm_simple(c, 'ballistic'),
+# marine / recon / cataphract / bionic helmets are registered by armor3d
+HELMET_DESIGNS = {'helm': lambda c: helm_simple(c, 'helm'), 'ballistic': lambda c: helm_simple(c, 'ballistic'),
                   'mask': lambda c: helm_simple(c, 'mask'), 'gasmask': lambda c: helm_simple(c, 'gasmask'),
                   'monolith': lambda c: helm_simple(c, 'monolith')}
 

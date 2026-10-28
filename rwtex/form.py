@@ -18,11 +18,10 @@ for flat facet shading with a top-front light.
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Sequence, Tuple
+from typing import Tuple
 
 import numpy as np
 
-from .archetypes.apparel import templates
 
 def _n(v):
     v = np.asarray(v, float)
@@ -48,6 +47,7 @@ def tone_for(n: np.ndarray, view: str = 'south', thresh=THRESH) -> int:
 
 
 def _rows(key: str, kind: str, k: float, scale: float, center) -> np.ndarray:
+    from .archetypes.apparel import templates   # lazy: apparel imports this module
     a = np.asarray(templates()[kind][key], dtype=float)
     cx0, cy0 = center
     y = ((a[:, 0] + 0.5 - cy0) * scale + cy0) * k
@@ -145,10 +145,12 @@ class TorsoForm:
         return self.top + v * self.H
 
     def _ext(self, R: np.ndarray, y: float, y_sh: float, y_hip: float) -> Tuple[float, float]:
-        yy = min(max(y, y_sh), y_hip)
-        xl = float(np.interp(yy, R[:, 0], R[:, 1]))
-        xr = float(np.interp(yy, R[:, 0], R[:, 2]))
-        return (xl + xr) / 2, (xr - xl) / 2
+        """Silhouette centre and half-extent at screen height ``y``: the measured body outline
+        itself, so shells hug the rounded shoulders exactly the way vanilla armor does and
+        tassets taper with the legs."""
+        xl = float(np.interp(y, R[:, 0], R[:, 1]))
+        xr = float(np.interp(y, R[:, 0], R[:, 2]))
+        return (xl + xr) / 2, max((xr - xl) / 2, 1.0)
 
     def a(self, v: float) -> Tuple[float, float]:
         """(centre x, half width) seen from the front."""
@@ -159,11 +161,11 @@ class TorsoForm:
         return self._ext(self.E, self.y(v), self.ye_sh, self.ye_hip)
 
     def cap(self, v: float) -> float:
-        """Radius factor: shoulders round over the top (v < 0) like a dome."""
-        if v >= 0.06:
+        """Radius factor above the body (v < 0): a short dome so collars and crests can rise a
+        few px over the shoulders.  Inside the body the silhouette itself provides the dome."""
+        if v >= 0.0:
             return 1.0
-        t = (0.06 - v) / 0.22
-        return float(math.sqrt(max(0.0, 1.0 - min(1.0, t) ** 2)))
+        return float(math.sqrt(max(0.0, 1.0 - min(1.0, -v / 0.08) ** 2)))
 
     # projection -----------------------------------------------------------------------------------
     def P(self, view: str, theta: float, v: float, r: float = 1.0, cap: bool = True) -> Tuple[float, float]:
@@ -183,7 +185,7 @@ class TorsoForm:
         _, a0 = self.a(v - dv)
         _, a1 = self.a(v + dv)
         slope = (a1 * self.cap(v + dv) - a0 * self.cap(v - dv)) / (2 * dv * self.H)
-        ny = float(np.clip(slope * 0.45, -0.18, 0.5)) + (0.55 if v < 0.06 else 0.0) * (1 - self.cap(v)) * 2
+        ny = float(np.clip(slope * 0.45, -0.18, 0.75)) + (1 - self.cap(v)) * 1.1
         if view == 'south':
             n = np.array([-math.sin(theta), ny, math.cos(theta)])
         elif view == 'north':
@@ -193,15 +195,18 @@ class TorsoForm:
         return n / np.linalg.norm(n)
 
     def ring(self, view: str, poly_tv, r=1.0, wrap: float = 0.0, cap: bool = True) -> np.ndarray:
-        """Project a (theta, v) polygon; ``r`` is a radius factor or a callable v -> r
-        (e.g. splayed tassets).  ``wrap`` extends visibility past the silhouette for parts
+        """Project a (theta, v) polygon; ``r`` is a radius factor, a callable v -> r (e.g.
+        splayed tassets) or a callable (v, theta) -> r flagged with ``by_theta = True``.  ``wrap`` extends visibility past the silhouette for parts
         that stick out (pauldrons)."""
         clipped = visible_part(poly_tv, view, wrap)
         if len(clipped) < 3:
             return np.zeros((0, 2))
         d = densify(clipped)
-        rf = r if callable(r) else (lambda v, _r=r: _r)
-        return np.array([self.P(view, t, v, rf(v), cap) for t, v in d])
+        if not callable(r):
+            return np.array([self.P(view, t, v, r, cap) for t, v in d])
+        if getattr(r, 'by_theta', False):        # r(v, theta): asymmetric offsets (east view)
+            return np.array([self.P(view, t, v, r(v, t), cap) for t, v in d])
+        return np.array([self.P(view, t, v, r(v), cap) for t, v in d])
 
 
 class HeadForm:
