@@ -9,3 +9,5 @@ dist/
 compare.png
 sheet.png
 /tmp/
+# temporary agent worktrees (Claude Code isolation)
+.claude/worktrees/
