@@ -8,18 +8,25 @@ Expanded or Bionic Icons.
 
 1. Follow `.claude/skills/rimworld-texture-gen/SKILL.md`. It covers choosing the archetype and
    style, writing the spec, building, the review passes and delivery.
-2. Prefer a **spec in `specs/`** over code changes. Use a Python spec (`specs/*.py`, see
-   `specs/arc_glaive_halcyon.py`) when no archetype fits. Change the generator only when the
-   feature should be reusable.
+2. **The user's specs live in their mod**, e.g. `<Mod>/Source/TextureSpecs/`. Build them with
+   `rwtex build <spec> --out <scratch> --mod <Mod>`, which installs the textures into
+   `<Mod>/Textures/`.
+   - This repo's `specs/` is the example gallery. Add to it only when extending the gallery.
+   - Use a Python spec (see `specs/arc_glaive_halcyon.py`) when no archetype fits.
+   - Change the generator only when the feature should be reusable.
 3. **Always look at the result.** Read the `_preview.png` or `_worn_preview.png` image and do the
    review passes in `docs/WORKFLOW.md`. Compare with vanilla where you can. At minimum, compare
    with the extents tables in `docs/STYLE_GUIDE.md`.
-4. Report the PNG paths, the XML snippet from `<name>.xml.txt` and any lint warnings.
+4. Report the installed paths, the XML snippet from `<name>.xml.txt` and any lint warnings.
+   `docs/MODDING.md` covers scaffolding a def; copy its parent from the vanilla item in the user's
+   install rather than guessing.
 
 ## Commands
 
 ```bash
-pip install -r requirements.txt                   # pillow, numpy, pyyaml
+pip install -e .                                  # pillow, numpy, pyyaml + the `rwtex` command
+rwtex build path/to/spec.yaml --out /tmp/b --mod path/to/MyMod   # build + install into a mod
+rwtex new rifle --name X --style spacer           # starter spec in the current folder
 python -m rwtex build specs/                      # all examples -> output/
 python -m rwtex build specs/x.yaml                # one spec
 python -m rwtex matrix sword|polearm|ranged|armor|helmet|bionic_part --out m.png
@@ -41,13 +48,13 @@ python -m pytest -q                               # smoke tests (~1 min)
   points plus the older 2D designs), `armor3d` (the perspective-correct marine, recon, cataphract
   and bionic designs) and `bionic` (Bionic Icons items).
 - `rwtex/form.py` holds the 3D torso and head proxies used by apparel.
-  `rwtex/data/armor_fit.json` holds the vanilla PowerArmor fit (silhouette offsets and plate
-  heights per body type).
+  `rwtex/data/armor_fit.json` holds silhouette offsets and plate heights per body type, measured on
+  vanilla marine armor (and on recon armor, under `variants`).
 - New armor or helmet designs should build on `marine_kit`, `vplate`, `hshell` and `hplate` in
   `armor3d.py`, not on hand-placed 2D shapes. Those helpers are what keep every body type and
   view consistent with vanilla.
 - `docs/` holds `STYLE_GUIDE.md` (measurements), `MOD_STYLES.md`, `ARCHETYPES.md` (every
-  parameter) and `WORKFLOW.md`.
+  parameter), `WORKFLOW.md` and `MODDING.md` (defs, colouring, testing in game).
 
 ## Rules
 

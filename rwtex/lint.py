@@ -156,10 +156,65 @@ def lint_png(path: str, kind: Optional[str] = None) -> Report:
     return r
 
 
+def mask_slivers(tex_path: str, mask_path: str, light: float = 170.0, reach: int = 3) -> int:
+    """Count light texture pixels left UNTINTED in a thin seam (<= ``reach`` px) with tinted
+    pixels on both sides - e.g. a part line drawn into the mask but not into the texture.  Such
+    seams show up as white lines once the item is dyed or made from a coloured stuff.  Only
+    neutral (white/grey) pixels count, and wider untinted features (joint caps, lenses) and
+    coloured details (glow lines, decals) are ignored."""
+    t = np.asarray(Image.open(tex_path).convert('RGBA'), dtype=np.float32)
+    m = np.asarray(Image.open(mask_path).convert('RGB'), dtype=np.float32)
+    if t.shape[:2] != m.shape[:2]:
+        return 0
+    lum = t[..., :3] @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    neutral = (t[..., :3].max(axis=2) - t[..., :3].min(axis=2)) < 24   # white/grey shell, not glow or decals
+    tinted = (m[..., 0] > 127) | (m[..., 1] > 127)
+    cand = (t[..., 3] > 127) & (lum >= light) & neutral & ~tinted
+    if not cand.any():
+        return 0
+    H, W = tinted.shape
+    pad = np.pad(tinted, reach)
+
+    def any_shift(axis: int, sign: int) -> np.ndarray:
+        acc = np.zeros((H, W), bool)
+        for d in range(1, reach + 1):
+            dy, dx = (sign * d, 0) if axis == 0 else (0, sign * d)
+            acc |= pad[reach + dy:reach + dy + H, reach + dx:reach + dx + W]
+        return acc
+    sandwiched = (any_shift(1, -1) & any_shift(1, 1)) | (any_shift(0, -1) & any_shift(0, 1))
+    return int((cand & sandwiched).sum())
+
+
+def _mask_pairs(directory: str, files: List[str]):
+    for f in files:
+        if f.endswith('m.png'):
+            continue
+        stem = f[:-4]
+        for cand in (stem + '_m.png', stem + 'm.png'):
+            if cand in files:
+                yield f, cand
+                break
+
+
 def lint_set(directory: str) -> List[str]:
-    """Check apparel sets for missing body types/directions and masks."""
+    """Check apparel sets (body and headgear) for missing body types / directions / ground
+    textures and masks, and every texture+mask pair for untinted slivers."""
     msgs = []
     files = [os.path.basename(f) for f in glob.glob(os.path.join(directory, '*.png'))]
+    heads = set()
+    for f in files:
+        m = re.match(r'(.+)_(south|east|north)\.png$', f)
+        if m and not re.search(r'_(Male|Female|Thin|Hulk|Fat)$', m.group(1)):
+            heads.add(m.group(1))
+    for b in sorted(heads):
+        missing = [f'{b}_{d}.png' for d in ('south', 'east', 'north') if f'{b}_{d}.png' not in files]
+        msgs.append(f'{b}: ' + ('all 3 headgear directions present' if not missing else f'missing {", ".join(missing)}'))
+        if f'{b}.png' not in files:
+            msgs.append(f'{b}: missing ground texture {b}.png')
+    for tex, mask in _mask_pairs(directory, files):
+        n = mask_slivers(os.path.join(directory, tex), os.path.join(directory, mask))
+        if n > 3:
+            msgs.append(f'warn  {tex}: {n} light px are untinted inside tinted plates (check {mask})')
     bases = set()
     for f in files:
         m = re.match(r'(.+)_(Male|Female|Thin|Hulk|Fat)_(south|east|north)\.png$', f)

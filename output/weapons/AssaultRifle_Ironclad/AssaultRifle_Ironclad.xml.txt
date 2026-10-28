@@ -4,7 +4,7 @@
     <graphicClass>Graphic_Single</graphicClass>
 </graphicData>
 
-<!-- graphic block for Gun_AssaultRifle_Ironclad (texture: Textures/Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad_UniqueA.png) -->
+<!-- graphic block for AssaultRifle_Ironclad_UniqueA (texture: Textures/Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad_UniqueA.png) -->
 <graphicData>
     <texPath>Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad_UniqueA</texPath>
     <graphicClass>Graphic_Single</graphicClass>

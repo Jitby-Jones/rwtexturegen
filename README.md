@@ -11,11 +11,36 @@ Bionic Icons and Vanilla Expanded. With these, the same function (a sword, a rif
 armor) can be designed in any tech level's visual language.
 
 ```bash
-pip install -r requirements.txt
-python -m rwtex build specs/                         # render every example
-python -m rwtex matrix sword --out sword_matrix.png  # one sword in all 12 styles
-python -m rwtex new sword --name MyBlade --style archotech --out specs/my_blade.yaml
+pip install -e .                                    # pillow, numpy, pyyaml + the `rwtex` command
+rwtex build specs/                                  # render every example into output/
+rwtex matrix sword --out sword_matrix.png           # one sword in all 12 styles
 ```
+
+For your own items, keep the specs in your mod and let the build install the textures:
+
+```bash
+cd MyMod/Source/TextureSpecs
+rwtex new rifle --name ChargeCarbine --style spacer          # starter spec listing the style's defaults
+rwtex build ChargeCarbine.yaml --out /tmp/rwtex-build --mod ../..
+```
+
+That writes `MyMod/Textures/Things/Item/Equipment/WeaponRanged/ChargeCarbine.png`, plus a preview
+and the `graphicData` XML in the build folder. [docs/MODDING.md](docs/MODDING.md) covers the def
+side.
+
+### With Claude Code
+
+The repo carries its own instructions (`CLAUDE.md`) and a skill (`rimworld-texture-gen`). A session
+that can see them knows the workflow: writing the spec in your mod, building with `--mod`,
+reviewing the previews and scaffolding the def.
+
+| setup | what loads |
+|---|---|
+| Claude Code in your mod, with this repo added: `claude --add-dir /path/to/rwtexturegen` | The skill loads automatically. To load this repo's `CLAUDE.md` as well, set `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`. The skill alone is enough to work. |
+| Claude Code on the web | Attach this repository to the session next to your mod repo. Its `CLAUDE.md` and skill come with the clone. |
+| This repo as the working directory | Both load. Tell Claude where your mod folder is. |
+
+In a fresh environment, Claude runs `pip install -e <this repo>` first, as the skill says.
 
 ## Gallery
 
@@ -105,6 +130,8 @@ docs/                   style guide, mod styles, lexicon, archetype reference, w
 
 - [docs/WORKFLOW.md](docs/WORKFLOW.md): the multi-pass review loop and how to go from idea to a
   texture in the game.
+- [docs/MODDING.md](docs/MODDING.md): mod folder layout, the def XML, how masks, stuff, dye and
+  ideology colour work, vanilla reference art and testing in game.
 - [docs/ARCHETYPES.md](docs/ARCHETYPES.md): every archetype parameter and the Python spec / parts
   API.
 - [docs/STYLE_LEXICON.md](docs/STYLE_LEXICON.md): the style vocabulary, generated from the YAML.

@@ -63,12 +63,13 @@ measured from the vanilla assault rifle.
 | `stock` | `none`, `fixed`, `skeletal`, `wood`, `block`, `sleek`, `stepped` |
 | `receiver` | `ar`, `ak`, `block`, `sleek`, `stepped`, `wedge` |
 | `grip` | `angled`, `none` |
-| `mag` | `none`, `curved`, `straight`, `box`, `cell`, `cells` (charge cells), `drum` |
+| `mag` | `none`, `curved`, `straight`, `box`, `cell` (one cell with a stripe in the style's energy colour), `cells` (two charge cells), `drum` |
 | `handguard` | `round`, `rail`, `shroud`, `sleek`, `stepped` |
 | `sight` | `none`, `carry`, `iron`, `dot`, `scope` |
 | `muzzle` | `none`, `flash`, `brake`, `emitter`, `spikes` |
 | `extras` | a list of `vents`, `rivets`, `bipod`, `conduit`, `ichor`, `fragments`, `edge_line`, `gold_trim`, `circuit` |
-| `length` | overall length factor (1.0 is the assault rifle; 0.93 is shorter) |
+| `length` | Overall length factor: 0.85 gives a carbine 85% as long as the full gun. The change comes out of the front section (handguard, barrel, front sight, muzzle, bipod), so the stock and receiver keep their size. |
+| `center` | Re-centre the gun on the canvas. The default is on whenever `length` ≠ 1. |
 | `bore_y`, `x_muzzle` | layout anchors |
 | `mask_parts` | the parts to paint white and mask red, making them colourable like Odyssey unique weapons, e.g. `[stock, handguard]` |
 
@@ -86,7 +87,7 @@ One design renders **5 body types × 3 directions + a ground icon**, and a mask 
 
 | parameter | values |
 |---|---|
-| `design` | Vanilla-construction designs on the 3D form (recommended): `marine`, `recon` (slimmer, V collar), `cataphract` (bulkier, gorget, broad flanks), `bionic` (muscle-fibre undersuit, bionic spine, power core, joint caps). Older 2D designs: `plate`, `tribal`, `flak`, `monolith`, `exo`. |
+| `design` | Vanilla-construction designs on the 3D form (recommended): `marine` (fitted to vanilla marine armor), `recon` (fitted to vanilla recon armor: inside the body, white yoke, V collar, dark flanks), `cataphract` (marine, bulkier: gorget, broad flanks), `bionic` (marine with a muscle-fibre undersuit, bionic spine, power core and joint caps). Older 2D designs: `plate`, `tribal`, `flak`, `monolith`, `exo`. |
 | `mats` | A role map. Roles are `shell`, `undersuit`, `strap`, `accent`, `trim`, `energy`, `joint` and `lens`. |
 | `mask_roles` | The roles masked red for stuff or ideology tint. The default is `('shell',)`; pass `()` for an unmasked armor. |
 | `body_types`, `dirs` | Subsets to render. All are rendered by default. |
@@ -144,6 +145,18 @@ items:                             # optional extra textures rendered into the s
   - {name: Other, archetype: rifle, params: {...}}
 ```
 
+Spec notes:
+
+- **Items** (`items:`): each item may carry its own `xml:` (for example its own `def_name`) and its
+  own `output.tex_path` / `output.tex_root`.
+- **Masks**: `output.mask: false` writes vanilla-style unmasked textures, where the colour
+  multiplies the whole texture.
+- **Typos**: an unknown knob name prints a warning rather than being silently ignored.
+- **Build flags**:
+  - `rwtex build <specs> --out DIR` puts each spec's output folder (named after the last part of
+    `output.dir`) under `DIR`.
+  - `--mod MODDIR` also copies the game textures into `MODDIR/Textures/...`.
+
 A **Python spec** (`.py`) defines `SPEC` (the same keys, minus `archetype`) and
 `build(spec) -> Scene | ApparelSet | list`. Use one for compositions that no archetype covers;
 `specs/arc_glaive_halcyon.py` is a full example. `python -m rwtex build` treats both kinds the
@@ -197,7 +210,8 @@ with a `Ctx` object:
 
 The vanilla-construction kit is in `rwtex/archetypes/armor3d.py`:
 
-- `marine_kit(c, shell_add=0, neck='round'|'gorget'|'v', chest_w=0.9, pauldron_add=0, ...)` builds
+- `marine_kit(c, fit_kind='marine'|'recon', shell_add=0, neck='round'|'gorget'|'v', chest_w=0.9, pauldron_add=0,
+  flank_cut=None, back_cut=False, chest_facet=None, ...)` builds
   the whole vanilla marine construction and returns its parts (`shell`, `chest`, `belt`,
   `pauldron`, `spine`, `node`...) so a variant can decorate them. The parts are:
   - the shell
@@ -208,8 +222,13 @@ The vanilla-construction kit is in `rwtex/archetypes/armor3d.py`:
   - the north spine plate
   - the east pauldron
 
-  Every silhouette follows the vanilla PowerArmor fit for the body type
-  (`rwtex/data/armor_fit.json`).
+  Every silhouette follows a fit measured on vanilla armor for each body type
+  (`rwtex/data/armor_fit.json`). `fit_kind` picks marine or recon armor.
+  - `flank_cut` (with `back_cut`) stops the shell at the flanks so the dark undersuit shows, as on
+    recon armor.
+  - `chest_facet` adds the recon abdomen plate's grey lower facet.
+  - `base_suit(c, fibers_, from_v, expand)` draws the undersuit. `expand` (px) fits it to the body
+    outline: about -2.5 for recon armor.
 - `vplate(c, name, poly, z, role, r, cols, rows, tone, gap, within)` is a plate patch in
   surface coordinates: `theta` runs around the body (0 = front, +π/2 = the pawn's right side,
   π = back) and `v` runs down from the shoulders (0) to the bottom (1).

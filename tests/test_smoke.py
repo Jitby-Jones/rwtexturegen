@@ -4,13 +4,14 @@ import glob
 import os
 import tempfile
 import unittest
+import warnings
 
 import numpy as np
 
 from rwtex.archetypes import build
 from rwtex.archetypes.apparel import BODY_TYPES, DIRS
 from rwtex.docs import lexicon_markdown
-from rwtex.lint import lint_png
+from rwtex.lint import lint_png, mask_slivers
 from rwtex.spec import load, run
 from rwtex.styles import all_styles
 
@@ -71,6 +72,63 @@ class Apparel(unittest.TestCase):
                 aset = build('helmet', style='spacer', design=design, name='H')
                 for d in DIRS:
                     _check_rgba(self, aset.scenes[d].render())
+
+
+def _extent(img):
+    al = np.asarray(img)[..., 3] > 128
+    ys, xs = np.nonzero(al)
+    return xs.min(), xs.max(), ys.min(), ys.max()
+
+
+class Regressions(unittest.TestCase):
+    def test_masks_have_no_untinted_slivers(self):
+        """Part lines must be clipped in the mask exactly as in the texture (dyed armor used to
+        show white seams)."""
+        with tempfile.TemporaryDirectory() as d:
+            for design in ('marine', 'recon', 'bionic'):
+                aset = build('armor', style='bionic' if design == 'bionic' else 'spacer', design=design, name='A',
+                             body_types=['Male', 'Female', 'Fat'], dirs=['south', 'east'], ground=False)
+                for key, sc in aset.scenes.items():
+                    tp, mp = os.path.join(d, f'{design}_{key}.png'), os.path.join(d, f'{design}_{key}m.png')
+                    sc.render().save(tp)
+                    sc.render_mask().save(mp)
+                    with self.subTest(design=design, view=key):
+                        self.assertEqual(mask_slivers(tp, mp), 0)
+
+    def test_recon_matches_vanilla_footprint(self):
+        """docs/STYLE_GUIDE.md: vanilla ReconArmor Male south x38-88, y42-109."""
+        x0, x1, y0, y1 = _extent(build('armor', style='spacer', design='recon', name='A', body_types=['Male'],
+                                       dirs=['south'], ground=False).scenes['Male_south'].render())
+        for got, want in ((x0, 38), (x1, 88), (y0, 42), (y1, 109)):
+            self.assertLessEqual(abs(int(got) - want), 3)
+
+    def test_rifle_length_shortens_and_centres(self):
+        full = _extent(build('rifle', style='industrial').render())
+        short = _extent(build('rifle', style='industrial', length=0.8).render())
+        self.assertLess(short[1] - short[0], (full[1] - full[0]) * 0.9)
+        self.assertLessEqual(abs((short[0] + short[1]) / 2 - 63.5), 1.0)
+
+    def test_unknown_parameter_warns(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            build('rifle', style='spacer', lenght=0.8)
+        self.assertTrue(any('lenght' in str(x.message) for x in w))
+
+    def test_new_and_build_install_into_a_mod(self):
+        from rwtex.cli import main
+        with tempfile.TemporaryDirectory() as d:
+            mod = os.path.join(d, 'MyMod')
+            os.makedirs(os.path.join(mod, 'About'))
+            gun, suit = os.path.join(d, 'Gun.yaml'), os.path.join(d, 'Suit.yaml')
+            main(['new', 'rifle', '--name', 'TestGun', '--style', 'spacer', '--out', gun])
+            main(['new', 'helmet', '--name', 'TestHelm', '--style', 'spacer', '--out', suit])
+            main(['build', gun, suit, '--out', os.path.join(d, 'build'), '--mod', mod, '--no-svg'])
+            tex = os.path.join(mod, 'Textures')
+            self.assertTrue(os.path.exists(os.path.join(tex, 'Things/Item/Equipment/WeaponRanged/TestGun.png')))
+            helm = os.path.join(tex, 'Things/Pawn/Humanlike/Apparel/TestHelm')
+            for f in ('TestHelm.png', 'TestHelm_south.png', 'TestHelm_east.png', 'TestHelm_north.png', 'TestHelm_southm.png'):
+                self.assertTrue(os.path.exists(os.path.join(helm, f)), f)
+            self.assertFalse(glob.glob(os.path.join(tex, '**', '*preview*'), recursive=True))
 
 
 class Specs(unittest.TestCase):

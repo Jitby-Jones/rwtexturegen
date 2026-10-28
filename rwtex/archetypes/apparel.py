@@ -149,6 +149,7 @@ class Ctx:
     ground: bool = False
     seed: int = 0
     form: object = None   # rwtex.form.TorsoForm / HeadForm (3D proxy for perspective-correct plates)
+    fit: str = 'marine'   # which measured vanilla fit the 3D-form designs follow (rwtex/data/armor_fit.json)
 
     def m(self, role: str) -> str:
         return self.mats.get(role) or self.st.materials.get(role) or DEFAULT_ROLE_MATS.get(role) or role

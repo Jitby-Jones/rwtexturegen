@@ -5,33 +5,45 @@
 - **Function**: sword, polearm, rifle, bow, body armor, helmet or bionic part. If nothing fits,
   write a Python spec.
 - **Style**: the tech level or house style. Read `docs/STYLE_LEXICON.md`, and run
-  `python -m rwtex matrix <archetype>` to see the function in every style side by side.
+  `rwtex matrix <archetype>` to see the function in every style side by side.
 - **What makes it unique**: one or two signature features, for example a notch in the spine, a
   crescent guard, a glowing slot or a charge cell. Everything else stays vanilla. RimWorld items
   read best when they are simple.
 
-## 1. Write a spec
+## 1. Write a spec (in your mod)
+
+Install the tool once, so the `rwtex` command works from any folder:
 
 ```bash
-python -m rwtex new sword --name MyBlade --style ultratech --out specs/my_blade.yaml
+pip install -e /path/to/rwtexturegen
 ```
 
-Edit `params` using the parameter tables in `docs/ARCHETYPES.md`, then build it:
+Keep your specs in the mod, e.g. `MyMod/Source/TextureSpecs/`; RimWorld ignores `Source/`. This
+repo's `specs/` folder is only the example gallery.
 
 ```bash
-python -m rwtex build specs/my_blade.yaml
+cd MyMod/Source/TextureSpecs
+rwtex new sword --name MyBlade --style ultratech
 ```
 
-The output folder then contains:
+The starter spec lists the style's defaults as commented `key: value` lines; uncomment and edit
+them. Every knob is described in `docs/ARCHETYPES.md`. Then build it, install the textures into
+the mod, and send the previews to a scratch folder:
 
-- `MyBlade.png` (128 px) and `MyBlade_m.png` if anything is masked
-- `svg/MyBlade.svg`
-- `MyBlade_preview.png`, with 4×, 2× and 1× views on the dirt colour plus tint swatches
-- `MyBlade.xml.txt`, a `graphicData` snippet
-- `lint.txt`
+```bash
+rwtex build MyBlade.yaml --out /tmp/rwtex-build --mod ../..
+```
 
-For apparel, every body type and direction is written, along with `_worn_preview.png` (pawns in all
-body types and directions) and `_tint_<name>.png`.
+- The **mod** gets the game textures only:
+  - `Textures/<tex_path>.png`, plus `_m.png` if anything is masked;
+  - for apparel, `Textures/<tex_root>/<Name>/` with all 15 worn textures, their `…m` masks and the
+    ground icon.
+- The **build folder** gets the files to review:
+  - `MyBlade_preview.png`, with 4×, 2× and 1× views on the dirt colour plus tint swatches (apparel
+    gets `_worn_preview.png` and `_tint_<name>.png` instead);
+  - `MyBlade.xml.txt`, the `graphicData` snippet;
+  - `lint.txt`;
+  - `svg/` sources.
 
 ## 2. The multi-pass review
 
@@ -60,29 +72,32 @@ Look at the preview after every pass. Use the Read tool on the PNG, which shows 
 4. **Continuity and in-context pass.** Compare against vanilla and the rest of your mod:
 
    ```bash
-   python -m rwtex compare output/weapons/MyBlade/MyBlade.png path/to/vanilla/Monosword.png --zoom 4
-   python -m rwtex sheet output/weapons/*/*.png --out sheet.png --title "my mod"
+   rwtex compare output/weapons/MyBlade/MyBlade.png path/to/vanilla/Monosword.png --zoom 4
+   rwtex sheet output/weapons/*/*.png --out sheet.png --title "my mod"
    ```
 
    Check that the outline weight, ramp brightness, scale and detail density match the neighbours.
-   Run `python -m rwtex matrix <archetype> --styles a,b,c` to confirm a family of items reads as one
+   Run `rwtex matrix <archetype> --styles a,b,c` to confirm a family of items reads as one
    tech level.
 
 Fix by changing parameters. Don't edit the PNG. The PNG is a build output that should always be
 reproducible from the spec.
 
-## 3. Install in the mod
+## 3. Finish the def
 
-1. Copy the PNGs to `YourMod/Textures/<tex_path>`. For apparel, copy them to
-   `YourMod/Textures/Things/Pawn/Humanlike/Apparel/<Name>/`.
-2. Paste the XML snippet into the def. It contains:
-   - `graphicData`, with `CutoutComplex` when masked and a `color` for persona tints
-   - `equippedAngleOffset` for melee weapons
-   - `wornGraphicPath` and `useWornGraphicMask` for apparel
-3. Check in game:
-   - the item on the ground, on several floor colours
-   - the item equipped, in all four directions (west is mirrored east)
-   - at least one stuff tint, if the item is masked
+1. `--mod` has already put the textures in place. Without it, copy the PNGs and masks yourself:
+   - weapons and items go to `Textures/<tex_path>`;
+   - apparel goes to `Textures/Things/Pawn/Humanlike/Apparel/<Name>/`.
+2. Paste the snippet from `<Name>.xml.txt` into the ThingDef. It contains:
+   - `graphicData`, with `CutoutComplex` when masked and a `color` for persona tints;
+   - `equippedAngleOffset` for melee weapons;
+   - `wornGraphicPath` and `useWornGraphicMask` for apparel.
+
+   For a new item, scaffold the def from the vanilla item it riffs on (see `docs/MODDING.md`).
+3. Check in game (`docs/MODDING.md` has a checklist):
+   - the item on the ground, on several floor colours;
+   - the item equipped, in all four directions (west is mirrored east);
+   - at least one stuff or dye colour, if the item is masked.
 
 ## Tips
 
@@ -90,4 +105,5 @@ reproducible from the spec.
 - For a unique variant of a vanilla weapon, start from the recreation's parameters and swap one or
   two modules. That is how VE and Odyssey unique weapons work.
 - Keep specs in your mod repo, next to the defs, so textures can be rebuilt after a style change.
+- A misspelled knob prints a warning; read the build output.
 - `--no-preview` and `--no-svg` make batch builds faster.

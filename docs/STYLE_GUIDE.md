@@ -56,7 +56,7 @@ assume a **128 px** texture unless stated otherwise.
 | Charge tech | olive `#738542` with highlight `#9dad5a` | Charge rifle and charge lance cells. |
 | Melee blades | `#ffffff` top facet, `#dddddd` lower facet | Longsword, monosword (`#dedfde`) and other stuff-coloured blades. |
 | Monosword | grip `#636563` / top `#313431`; guard `#949294` / `#898789` / `#4a4d4a`; mono-edge cyan `#2986a5` (bulb `#318ea5`, glint `#c0dae3`) | Measured from the 128 px in-game texture. |
-| Marine / recon / cataphract | shells `#fcfcfc` / `#cccccc` / `#a3a3a3`, undersuit `#303030`, neck hole dark with a light rim | Shells are tinted by stuff and ideology through the mask. |
+| Marine / recon / cataphract | shells `#fcfcfc` / `#cccccc` / `#a3a3a3`, undersuit `#303030`, neck hole dark with a light rim | The base suits ship **without** masks: dye or ideology colour multiplies the whole texture, and only the white shell visibly changes. The prestige versions ship `…_southm` masks. |
 | Prestige trim | gold `#b4983c` | |
 | Mechanoid | taupe `#8c7868` (`#9c8c84` / `#706458`), pale shells `#a9ad9c`, conduit `#a4b4bc`, red lights `#fc4838` | Charge blaster, inferno cannon, lancer, diabolus. |
 | Archotech | olive-khaki blocks `#8a8e6a`..`#a9ac86`, frame `#444`, yellow traces `#e6d53a` with via dots, eye glow `#dedf42` | |
@@ -191,7 +191,8 @@ Helmet footprints (head texture space):
 
 - Shapes: a few large plates. There is a V or yoke chest plate, a foreshortened neck ring and a
   belt that bows with the body. Pads are flared. Tassets are split and splayed.
-- Tones: the white tintable shell is masked red. The dark undersuit shows only in the gaps
+- Tones: the white shell is what takes the colour (vanilla multiplies the whole texture; prestige
+  armor and this generator use a red mask). The dark undersuit shows only in the gaps
   (armpits, waist, between tassets). Each plate has 2–3 flat facet tones.
 - Detail: panel lines are sparse and follow the form.
 - Recon is slimmer with segmented abdomen plates. Cataphract is bulkier, with a raised pad line,

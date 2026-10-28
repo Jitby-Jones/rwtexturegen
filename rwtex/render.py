@@ -294,6 +294,20 @@ class Scene:
         for p in parts:
             self.add(p)
 
+    def translate(self, dx: float, dy: float = 0.0) -> 'Scene':
+        """Move every part (rings, clip and details) by (dx, dy) canvas px."""
+        off = np.array([dx, dy], dtype=float)
+        for p in self.parts:
+            p.rings = [r + off for r in p.rings]
+            if p.clip:
+                p.clip = [r + off for r in p.clip]
+            for d in p.details:
+                if isinstance(d, Line):
+                    d.pts = d.pts + off
+                else:
+                    d.rings = [r + off for r in d.rings]
+        return self
+
     def get(self, name: str) -> Part:
         for p in self.parts:
             if p.name == name:
@@ -633,6 +647,8 @@ class Scene:
             lw = self._line_w(p)
             if lw > 0:
                 st = self._stroke(p.rings, 2 * lw, win, closed=True)
+                if p.clip:  # clip the part line exactly as _render_part does, or the mask gets
+                    st = st * self._fill(p.clip, win)  # black lines over tintable plates
                 self._over(canvas, win, st, BLACK)
             pc = p.mask_color()
             self._over(canvas, win, m, pc)

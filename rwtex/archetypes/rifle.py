@@ -71,7 +71,11 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
           mag: Optional[str] = None, handguard: Optional[str] = None, sight: Optional[str] = None,
           muzzle: Optional[str] = None, extras: Optional[list] = None, mats: Optional[dict] = None,
           length: float = 1.0, bore_y: float = 63.5, x_muzzle: float = 124.0, mask_parts=(),
-          outline: Optional[float] = None, **_ignored) -> Scene:
+          center: Optional[bool] = None, outline: Optional[float] = None, **_ignored) -> Scene:
+    """``length`` is the overall length factor (0.85 = a carbine, 85% of the full gun).  The
+    change comes out of the front section (handguard, barrel, front sight, muzzle, bipod); stock
+    and receiver keep their size.  A resized gun is re-centred on the canvas (``center``,
+    default: whenever length != 1)."""
     st = get_style(style)
     d = dict(RIFLE_STYLE.get(st.key, RIFLE_STYLE['industrial']))
     dm = dict(d['mats'])
@@ -90,7 +94,11 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
     c = st.corner_px * k
     sb = _sb(st, k)
     X = lambda v: v * k  # noqa: E731
-    xm = x_muzzle * k
+    # the receiver ends at x=68: scale the front section so the whole gun (x 4..x_muzzle) ends up
+    # `length` times as long
+    fs = max(0.15, (length * (x_muzzle - 4) - (68 - 4)) / max(x_muzzle - 68, 1.0))
+    F = lambda v: X(68 + (v - 68) * fs)  # noqa: E731  (front section)
+    xm = F(x_muzzle)
     emat = dm.get('energy') or st.materials.get('energy')
 
     def add(nm, rings, mrole, z, shading=None, **kw):
@@ -205,7 +213,7 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
     elif mag == 'drum':
         add('mag', G.circle(X(60), yb + X(15), X(9)), 'mag', 3.4)
     # ---------------------------------------------------------------- handguard
-    hx0, hx1 = X(68), X(104) * length
+    hx0, hx1 = X(68), F(104)
     if handguard == 'round':
         p = add('handguard', C.corner_shape([(hx0, yb - X(5)), (hx1, yb - X(5)), (hx1, yb + X(5.5)), (hx0, yb + X(6))], st, X(2), k=k), 'handguard', 3.6)
         p.detail(*C.ring_lines(hx0 + X(2), hx1 - X(2), yb, X(4), 3, X(0.8), 'light'))
@@ -214,28 +222,29 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
         p.detail(*C.vent_slots(hx0 + X(3), yb - X(1.5), hx1 - X(3), yb + X(1.5), 5, k, vertical=True, tone='deep'))
         p.fill(G.rect(hx0, yb - X(6.5), hx1, yb - X(5)), 'deep')
     elif handguard == 'shroud':
-        hx1 = X(118) * length
+        hx1 = F(118)
         r = G.chamfer(G.poly([(X(70), yb - X(8)), (hx1, yb - X(5)), (hx1, yb + X(5)), (X(70), yb + X(8))]), X(2.5))
         p = add('handguard', r, 'handguard', 3.6, shading=[st.bevel(k)])
         p.detail(*C.vent_slots(X(76), yb - X(3), hx1 - X(6), yb + X(2.5), 5, k, tone='black'))
     elif handguard == 'sleek':
-        hx1 = X(112) * length
-        r = G.Path().move(X(70), yb - X(7)).quad(X(92), yb - X(7), hx1, yb - X(3)).line(hx1, yb + X(3)) \
-            .quad(X(92), yb + X(7), X(70), yb + X(7)).close().ring
+        hx1 = F(112)
+        r = G.Path().move(X(70), yb - X(7)).quad(F(92), yb - X(7), hx1, yb - X(3)).line(hx1, yb + X(3)) \
+            .quad(F(92), yb + X(7), X(70), yb + X(7)).close().ring
         p = add('handguard', r, 'handguard', 3.6, shading=[Bevel(X(1.0), X(1.4)), Split(at=0.62, tone='shade')])
         if 'edge_line' in ex and emat:
             p.line([(X(74), yb - X(1)), (hx1 - X(4), yb - X(0.5))], X(1.6), f'{emat}.base', mask=None)
             p.fill(G.circle(X(74), yb - X(1), X(1.8)), f'{emat}.shade', mask=None)
         if 'gold_trim' in ex:
-            p.line([(X(71), yb + X(5.4)), (X(100), yb + X(4.2))], X(1.4), 'imperial_gold.base', mask=None)
+            p.line([(X(71), yb + X(5.4)), (F(100), yb + X(4.2))], X(1.4), 'imperial_gold.base', mask=None)
     elif handguard == 'stepped':
-        hx1 = X(116) * length
-        r = G.poly([(X(76), yb - X(6)), (X(96), yb - X(6)), (X(96), yb - X(4)), (hx1, yb - X(4)), (hx1, yb + X(4)), (X(96), yb + X(4)),
-                    (X(96), yb + X(6)), (X(76), yb + X(6))])
+        hx1 = F(116)
+        xs_ = min(F(96), hx1 - X(6))
+        r = G.poly([(X(76), yb - X(6)), (xs_, yb - X(6)), (xs_, yb - X(4)), (hx1, yb - X(4)), (hx1, yb + X(4)), (xs_, yb + X(4)),
+                    (xs_, yb + X(6)), (X(76), yb + X(6))])
         p = add('handguard', r, 'handguard', 3.6, shading=[Bevel(X(1), X(1))])
         if 'circuit' in ex:
-            p.line([(X(80), yb), (X(110), yb)], X(1), 'archo_yellow.base', mask=None)
-            p.fill(G.circle(X(110), yb, X(1.4)), 'archo_yellow.light', mask=None)
+            p.line([(X(80), yb), (F(110), yb)], X(1), 'archo_yellow.base', mask=None)
+            p.fill(G.circle(F(110), yb, X(1.4)), 'archo_yellow.light', mask=None)
     # ---------------------------------------------------------------- barrel, sight, muzzle
     if handguard not in ('shroud', 'stepped') or muzzle not in ('none',):
         bx0 = hx1 - X(1)
@@ -244,10 +253,14 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
         r = C.corner_shape([(X(40), yb - X(13)), (X(64), yb - X(13)), (X(64), yb - X(8)), (X(40), yb - X(8))], st, X(1.2), k=k)
         p = add('carry', r, 'sight', 6)
         p.fill(G.rect(X(46), yb - X(11.5), X(60), yb - X(9.5)), 'deep')
-        add('front_sight', G.poly([(X(105), yb - X(1)), (X(105), yb - X(10)), (X(108), yb - X(10)), (X(110), yb - X(1))]), 'sight', 2.9)
+        fs = F(105) - X(105)
+        add('front_sight', G.poly([(X(105) + fs, yb - X(1)), (X(105) + fs, yb - X(10)), (X(108) + fs, yb - X(10)), (X(110) + fs, yb - X(1))]),
+            'sight', 2.9)
     elif sight == 'iron':
         add('rear_sight', G.rect(X(40), yb - X(11), X(44), yb - X(7.5)), 'sight', 6)
-        add('front_sight', G.poly([(X(104), yb - X(1)), (X(105), yb - X(8)), (X(107), yb - X(8)), (X(108), yb - X(1))]), 'sight', 2.9)
+        fs = F(104) - X(104)
+        add('front_sight', G.poly([(X(104) + fs, yb - X(1)), (X(105) + fs, yb - X(8)), (X(107) + fs, yb - X(8)), (X(108) + fs, yb - X(1))]),
+            'sight', 2.9)
     elif sight == 'dot':
         p = add('optic', G.chamfer(G.rect(X(44), yb - X(14), X(58), yb - X(8)), X(1.5)), 'sight', 6)
         p.fill(G.rect(X(56), yb - X(12.5), X(58.5), yb - X(9.5)), 'lens_teal.light', mask=None)
@@ -274,18 +287,27 @@ def rifle(style='industrial', size: int = 128, seed: int = 0, name: str = 'rifle
     # ---------------------------------------------------------------- extras
     if 'bipod' in ex:
         for i, dx in enumerate((0, X(4))):
-            add(f'bipod{i}', G.poly([(X(92) + dx, yb + X(5)), (X(94.5) + dx, yb + X(5)), (X(90) + dx, yb + X(22)), (X(87.5) + dx, yb + X(22))]),
+            bx = F(92) - X(92)
+            add(f'bipod{i}', G.poly([(X(92) + bx + dx, yb + X(5)), (X(94.5) + bx + dx, yb + X(5)), (X(90) + bx + dx, yb + X(22)),
+                                     (X(87.5) + bx + dx, yb + X(22))]),
                 'barrel', 2.5 + i * 0.01, shading=[Bevel(X(0.6), X(0.6))])
     if 'ichor' in ex and emat:
         rp = s.get('upper') if any(p.name == 'upper' for p in s.parts) else s.parts[-1]
         rp.line([(X(36), yb - X(4)), (X(48), yb - X(3.2)), (X(56), yb - X(4.4)), (X(66), yb - X(3.5))], X(1.2), f'{emat}.base', mask=None)
     if 'fragments' in ex:
-        s.add(Part('fragment', G.rect(X(100), yb - X(12), X(105), yb - X(8)), dm['receiver'], z=7, shading=[Bevel(X(0.8), X(0.8))]))
-        s.add(Part('fragment2', G.rect(X(108), yb + X(7), X(112), yb + X(10)), dm['receiver'], z=7, shading=[Bevel(X(0.8), X(0.8))]))
+        s.add(Part('fragment', G.rect(F(100), yb - X(12), F(100) + X(5), yb - X(8)), dm['receiver'], z=7, shading=[Bevel(X(0.8), X(0.8))]))
+        s.add(Part('fragment2', G.rect(F(108), yb + X(7), F(108) + X(4), yb + X(10)), dm['receiver'], z=7, shading=[Bevel(X(0.8), X(0.8))]))
     if st.glow == 'halo' and emat:
         mz = [p for p in s.parts if p.name == 'muzzle']
         if mz:
             mz[0].glow = Glow(getmat(emat).tone('glow'), X(2.5), 0.45, 'halo')
+    if center is None:
+        center = abs(length - 1.0) > 1e-6
+    if center:
+        x0, _, x1, _ = s.bbox()
+        dx = round(size / 2 - (x0 + x1) / 2)       # whole pixels keep the art crisp
+        if dx:
+            s.translate(dx, 0)
     s.meta.update(dict(archetype='rifle', style=st.key, kind='ranged', stock=stock, receiver=receiver, mag=mag,
                        handguard=handguard, sight=sight, muzzle=muzzle))
     return s

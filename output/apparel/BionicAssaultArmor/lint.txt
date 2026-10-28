@@ -201,5 +201,6 @@
   ok    mask has coloured region
   ok    mask aligned with base alpha
   stats size=128x128
+BionicAssaultHelmet: all 3 headgear directions present
 BionicAssaultArmor: all 15 worn textures present
 BionicAssaultArmor: masks complete

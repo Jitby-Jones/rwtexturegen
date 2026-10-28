@@ -95,22 +95,30 @@ def fibers(c: Ctx, p: Part, r: float = 1.0) -> None:
 _FIT: Optional[dict] = None
 
 
-def fit(c: Ctx, key: str, v0: float = -1.0, v1: float = 2.0):
-    """Measured vanilla marine-armor silhouette offsets for this body type: (v, px) pairs.
-    ``key``: south | north | east_back | east_front (rwtex/data/armor_fit.json)."""
+def _fitdata(c: Ctx) -> dict:
     global _FIT
     if _FIT is None:
         import json
         import os
         with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'armor_fit.json'), encoding='utf-8') as f:
             _FIT = json.load(f)
-    row = _FIT['bodies'].get(c.bt, _FIT['bodies']['Male'])[key]
+    if c.fit != 'marine':
+        return _FIT['variants'][c.fit]
+    return _FIT
+
+
+def fit(c: Ctx, key: str, v0: float = -1.0, v1: float = 2.0):
+    """Measured vanilla silhouette offsets for this body type as (v, px) pairs.  ``key``: south |
+    north | east_back | east_front.  ``c.fit`` picks the vanilla armor they were measured on
+    (marine = PowerArmor, recon = ReconArmor; rwtex/data/armor_fit.json)."""
+    d = _fitdata(c)
+    row = d['bodies'].get(c.bt, d['bodies']['Male'])[key]
     return [(v, o) for v, o in zip(_FIT['v'], row) if o is not None and v0 <= v <= v1]
 
 
 def fit_top(c: Ctx, view: Optional[str] = None) -> float:
-    fit(c, 'south')
-    return float(_FIT['bodies'].get(c.bt, _FIT['bodies']['Male'])[(view or ('south' if c.dir == 'east' else c.dir)) + '_top'])
+    d = _fitdata(c)
+    return float(d['bodies'].get(c.bt, d['bodies']['Male'])[(view or ('south' if c.dir == 'east' else c.dir)) + '_top'])
 
 
 def layout(c: Ctx) -> dict:
@@ -119,9 +127,9 @@ def layout(c: Ctx) -> dict:
     body's centre line, where the projection drops the camera-facing surface by half the
     TILT bow, so that drop is taken back out here."""
     from ..form import TILT
-    fit(c, 'south')
     form: TorsoForm = c.form
-    raw = _FIT['layout'].get(c.bt, _FIT['layout']['Male'])
+    d = _fitdata(c)
+    raw = d['layout'].get(c.bt, d['layout']['Male'])
     return {key: v - 0.5 * TILT * form.d(v)[1] / form.H for key, v in raw.items()}
 
 
@@ -246,13 +254,14 @@ def back(poly):
     return [(PI - t, v) for t, v in poly][::-1]
 
 
-def base_suit(c: Ctx, fibers_: bool = False, from_v: float = 0.36) -> Part:
+def base_suit(c: Ctx, fibers_: bool = False, from_v: float = 0.36, expand: float = 0.4) -> Part:
     """Near-black undersuit: what shows in the belt and tasset gaps.  It starts below the
     shoulders (``from_v``) so the shell alone shapes the top of the silhouette - vanilla leaves
-    the body bare where the shell is cut back (east view, under the head)."""
+    the body bare where the shell is cut back (east view, under the head).  ``expand`` (px)
+    grows or shrinks it relative to the body outline."""
     c.scene.occlusion = None
     form: TorsoForm = c.form
-    ring = c.f.silhouette(0.4)
+    ring = c.f.silhouette(expand)
     y_cut = form.y(from_v)
     cut = clip_poly(ring[:, ::-1], y_cut, 1e6)[:, ::-1] if from_v > 0 else ring
     p = c.part('undersuit', cut if len(cut) >= 3 else ring, 'undersuit', 0, shading=[], mask=None, tone='base')
@@ -322,20 +331,39 @@ def _v_at(c: Ctx, y: float, theta: float = 0.0, r=1.0) -> float:
     return v
 
 
-def marine_kit(c: Ctx, *, shell_add: float = 0.0, neck: str = 'round', chest_w: float = 0.9, pauldron_add: float = 0.0,
+def marine_kit(c: Ctx, *, fit_kind: str = 'marine', shell_add: float = 0.0, neck: str = 'round', chest_w: float = 0.9,
+               pauldron_add: float = 0.0, flank_cut: Optional[float] = None, back_cut: bool = False, chest_facet: Optional[float] = None,
                chest: bool = True, pauldron: bool = True, spine: bool = True, tassets: bool = True, node_: bool = True) -> dict:
     """The vanilla marine construction shared by every power-armor design: silhouettes follow
     the measured vanilla PowerArmor fit for each body type (rwtex/data/armor_fit.json), the
-    internal plates are parametric.  ``shell_add`` widens (+px) or slims (-px) the shell,
-    ``neck`` is round | gorget | v, ``chest_w`` the chest plate half-width (theta) - a narrower
-    chest shows more of the shoulder flanks - and ``pauldron_add`` grows the east pauldron (px).
+    internal plates are parametric.
+
+    * ``fit_kind``: the measured vanilla armor to follow - ``marine`` (PowerArmor) or ``recon``
+      (ReconArmor: slimmer, sits inside the body, its own plate heights);
+    * ``shell_add``: widen (+px) or slim (-px) the shell further;
+    * ``neck``: round | gorget | v;  ``chest_w``: chest plate half-width (theta) - a narrower
+      chest shows more of the shoulder flanks;  ``pauldron_add``: grow the east pauldron (px);
+    * ``flank_cut``: v where the shell stops at the flanks, so the dark undersuit shows there
+      (vanilla recon: the white shell is only a shoulder yoke); ``back_cut`` extends the cut
+      across the back, leaving a centre column (the recon's H-shaped back plate);
+    * ``chest_facet``: v below which the chest plate turns into a lower #ccc facet (recon).
+
     Returns the main parts so variants can build on them."""
     form: TorsoForm = c.form
     k = c.k
+    c.fit = fit_kind
     out: dict = {}
     L = layout(c)
     front_bot, back_bot, belt_front, belt_back = L['front_bot'], L['back_bot'], L['belt_front'], L['belt_back']
     bot = edge(front_bot, back_bot)
+    if flank_cut is not None:
+        _b = bot
+
+        def bot(th, _b=_b):
+            a = abs(math.atan2(math.sin(th), math.cos(th)))     # 0 front .. pi back
+            hi = PI - 0.42 if back_cut else 2.45
+            w = float(np.clip((a - 0.62) / 0.25, 0, 1)) * float(np.clip((hi - a) / (0.12 if back_cut else 0.3), 0, 1))
+            return _b(th) * (1 - w) + flank_cut * w
     lo, hi = around(c)
     v_top = fit_top(c)
     add = lambda tb: [(v, o + shell_add * min(1.0, max(0.0, (v - v_top) / 0.12))) for v, o in tb]
@@ -384,9 +412,14 @@ def marine_kit(c: Ctx, *, shell_add: float = 0.0, neck: str = 'round', chest_w: 
                      (-0.62, top_c), (-cw, top_c + 0.02)] + bottom
         fv = top_c + 0.06
         fc = cw - 0.24
-        out['chest'] = vplate(c, 'chest', cpoly, 6, r=cr, cols=(-fc, fc), rows=(fv,),
-                              tone=lambda view, th, v: (2 if abs(th) > fc and v > fv else 1) if view == 'south' else vtone(view, th, v),
-                              gap=2.6, within=shell)
+        lf = front_bot - chest_facet if chest_facet else 9.0
+
+        def chest_tone(view, th, v):
+            if view != 'south':
+                return vtone(view, th, v)
+            return 2 if (abs(th) > fc and v > fv) or v > lf else 1
+        out['chest'] = vplate(c, 'chest', cpoly, 6, r=cr, cols=(-fc, fc), rows=(fv,) + ((lf,) if chest_facet else ()),
+                              tone=chest_tone, gap=2.6, within=shell)
     if pauldron and c.dir == 'east':
         pb = front_bot + 0.06
         pp = [(1.25, 0.25), (0.75, 0.28), (0.45, 0.4), (0.42, pb - 0.12), (0.55, pb - 0.05), (0.75, pb), (1.15, pb),
@@ -453,9 +486,11 @@ def d3_marine(c: Ctx) -> None:
 
 
 def d3_recon(c: Ctx) -> None:
-    """Recon armor: slimmer shell, a deep V collar instead of the round neck ring."""
-    base_suit(c)
-    marine_kit(c, shell_add=-2.0, neck='v', chest_w=0.82)
+    """Recon armor (fitted to vanilla ReconArmor): a slimmer suit that sits inside the body,
+    a white shoulder yoke with a deep V collar, dark undersuit at the flanks, an abdomen plate
+    with a grey lower facet."""
+    base_suit(c, from_v=0.18, expand=-2.5)
+    marine_kit(c, fit_kind='recon', neck='v', chest_w=0.82, flank_cut=0.22, back_cut=True, chest_facet=0.11)
 
 
 def d3_cataphract(c: Ctx) -> None:
