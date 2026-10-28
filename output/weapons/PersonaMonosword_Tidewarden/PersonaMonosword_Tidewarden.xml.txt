@@ -1,0 +1,8 @@
+<!-- graphic block for MeleeWeapon_PersonaMonosword_Tidewarden (texture: Textures/Things/Item/Equipment/WeaponMelee/PersonaMonosword_Tidewarden.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponMelee/PersonaMonosword_Tidewarden</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <shaderType>CutoutComplex</shaderType>
+    <color>(0.97,0.78,0.79)</color>
+</graphicData>
+  <equippedAngleOffset>-65</equippedAngleOffset>

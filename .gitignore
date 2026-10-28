@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+# scratch renders (the curated gallery lives in output/)
+compare.png
+sheet.png
+/tmp/

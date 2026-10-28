@@ -1,0 +1,5 @@
+== output/weapons/PersonaMonosword/PersonaMonosword.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.131, bbox=x4-124 y52-75, outline_dark_frac=1.0, outline_px=4.0, colours=44, mean_luma=0.72, aspect=5.22

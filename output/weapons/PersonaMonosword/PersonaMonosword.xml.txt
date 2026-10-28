@@ -1,0 +1,7 @@
+<!-- graphic block for MeleeWeapon_PersonaMonosword (texture: Textures/Things/Item/Equipment/WeaponMelee/PersonaMonosword.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponMelee/PersonaMonosword</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <color>(0.97,0.78,0.79)</color>
+</graphicData>
+  <equippedAngleOffset>-65</equippedAngleOffset>

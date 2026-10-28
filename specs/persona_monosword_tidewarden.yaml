@@ -1,0 +1,42 @@
+# NEW unique persona monosword variant: "Tidewarden".
+# Keeps the monosword family read (two-tone white blade, cyan mono-edge, grey grip, same
+# outline weight and proportions) but changes every module, VE-Persona-Weapons style:
+#   blade  - gently upswept, spine notch near the tip, longer tip
+#   guard  - crescent opening toward the blade
+#   grip   - segmented, ring pommel
+#   motif  - forked mono-edge ("split") ending in two node dots
+# The blade is masked (CutoutComplex red) so the persona pink tints only the blade while the
+# cyan edge and dark hilt stay untinted - the Odyssey unique-weapon mask convention.
+name: PersonaMonosword_Tidewarden
+archetype: sword
+style: ultratech
+size: 128
+seed: 4
+params:
+  blade: straight
+  curve: 4.0
+  taper: 0.22
+  tip_len: 16
+  blade_h: 13.5
+  notches: [[0.74, 2.6, 6.0]]
+  guard: crescent
+  guard_w: 7
+  guard_h: 24
+  grip: segmented
+  grip_len: 27
+  pommel: ring
+  pommel_s: 10
+  motif: split
+  motif_t: [0.04, 0.6]
+  motif_width: 3.6
+  facet: 0.48
+output:
+  dir: output/weapons/PersonaMonosword_Tidewarden
+  tex_path: Things/Item/Equipment/WeaponMelee/PersonaMonosword_Tidewarden
+  mask: auto
+preview:
+  tints: {persona: persona, plasteel: Plasteel, gold: Gold}
+xml:
+  def_name: MeleeWeapon_PersonaMonosword_Tidewarden
+  melee: true
+  tint: persona

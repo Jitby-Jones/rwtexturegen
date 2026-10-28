@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rwtexturegen"
+version = "0.1.0"
+description = "Vector texture generator for RimWorld mods: weapons, apparel and bionic icons in vanilla and mod house styles"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["pillow>=9", "numpy>=1.22", "pyyaml>=6"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+rwtex = "rwtex.cli:main"
+
+[tool.setuptools]
+packages = ["rwtex", "rwtex.archetypes", "rwtex.parts"]
+
+[tool.setuptools.package-data]
+rwtex = ["data/*.yaml", "data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

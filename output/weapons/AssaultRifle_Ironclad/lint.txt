@@ -1,0 +1,15 @@
+== output/weapons/AssaultRifle_Ironclad/AssaultRifle_Ironclad.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.184, bbox=x2-126 y46-98, outline_dark_frac=1.0, outline_px=3.0, colours=16, mean_luma=0.352, aspect=2.38
+== output/weapons/AssaultRifle_Ironclad/AssaultRifle_Ironclad_UniqueA.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.191, bbox=x2-126 y47-98, outline_dark_frac=1.0, outline_px=3.0, colours=26, mean_luma=0.581, aspect=2.43
+== output/weapons/AssaultRifle_Ironclad/AssaultRifle_Ironclad_UniqueA_m.png
+  ok    power-of-two size
+  ok    mask has coloured region
+  ok    mask aligned with base alpha
+  stats size=128x128

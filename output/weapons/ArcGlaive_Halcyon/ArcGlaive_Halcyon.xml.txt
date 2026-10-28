@@ -1,0 +1,6 @@
+<!-- graphic block for MeleeWeapon_ArcGlaive_Halcyon (texture: Textures/Things/Item/Equipment/WeaponMelee/ArcGlaive_Halcyon.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponMelee/ArcGlaive_Halcyon</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+</graphicData>
+  <equippedAngleOffset>-65</equippedAngleOffset>

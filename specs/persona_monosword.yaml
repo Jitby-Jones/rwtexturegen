@@ -1,0 +1,23 @@
+# Recreation of the Royalty persona monosword.
+# Geometry and palette come from the measured in-game 128px monosword texture (see
+# docs/STYLE_GUIDE.md "Monosword anatomy"); the ultratech sword defaults ARE that recreation.
+# Vanilla persona weapons are the plain monosword texture rendered with a pink multiply
+# (~(0.97,0.78,0.79), measured from the wiki image; VE Persona Weapons notes the same
+# "dark pink hue"), so the texture itself stays white/grey and the colour goes in graphicData.
+name: PersonaMonosword
+archetype: sword
+style: ultratech
+size: 128
+seed: 0
+params: {}
+output:
+  dir: output/weapons/PersonaMonosword
+  tex_path: Things/Item/Equipment/WeaponMelee/PersonaMonosword
+  mask: false            # vanilla monosword has no mask - the persona tint multiplies the whole texture
+  svg: true
+preview:
+  tints: {persona: persona}
+xml:
+  def_name: MeleeWeapon_PersonaMonosword
+  melee: true
+  tint: persona

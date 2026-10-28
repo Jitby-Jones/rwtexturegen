@@ -1,0 +1,5 @@
+<!-- graphic block for Gun_ChargeAssaultRifle (texture: Textures/Things/Item/Equipment/WeaponRanged/ChargeAssaultRifle.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponRanged/ChargeAssaultRifle</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+</graphicData>

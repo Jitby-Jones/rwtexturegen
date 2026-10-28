@@ -1,0 +1,42 @@
+# Assault rifle #1 - "Ironclad" (Industrial).
+# A new design in the exact vanilla gun ramp (#222 polymer furniture, #666 receiver,
+# #919191 lit edges): skeletal stock, flat-top receiver with a red-dot, railed handguard,
+# curved mag, muzzle brake.  Bore centred at y=63.5, muzzle to the right (vanilla rule).
+#
+# The extra item is an Odyssey-style UNIQUE variant: same gun, but the stock and handguard
+# are swapped to white parts covered by a red _m mask so the game can colour them
+# (Odyssey's UniqueAssaultRifleA/B/C use exactly this convention).
+name: AssaultRifle_Ironclad
+archetype: rifle
+style: industrial
+size: 128
+seed: 11
+params:
+  stock: skeletal
+  receiver: ar
+  mag: curved
+  handguard: rail
+  sight: dot
+  muzzle: brake
+output:
+  dir: output/weapons/AssaultRifle_Ironclad
+  tex_path: Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad
+  tex_root: Things/Item/Equipment/WeaponRanged
+preview:
+  stuff: [Steel, Plasteel]
+xml:
+  def_name: Gun_AssaultRifle_Ironclad
+  melee: false
+items:
+  - name: AssaultRifle_Ironclad_UniqueA
+    archetype: rifle
+    seed: 11
+    params:
+      stock: fixed
+      receiver: ar
+      mag: curved
+      handguard: round
+      sight: carry
+      muzzle: flash
+      mats: {stock: tint_white, handguard: tint_white}
+      mask_parts: [stock, handguard]

@@ -1,0 +1,21 @@
+<!-- BionicAssaultArmor: body apparel: worn textures are <path>_<BodyType>_south/_east/_north for Male/Female/Thin/Hulk/Fat; masks use the "m" suffix (e.g. _southm) -->
+<graphicData>
+    <texPath>Things/Pawn/Humanlike/Apparel/BionicAssaultArmor/BionicAssaultArmor</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <shaderType>CutoutComplex</shaderType>
+</graphicData>
+<apparel>
+    <wornGraphicPath>Things/Pawn/Humanlike/Apparel/BionicAssaultArmor/BionicAssaultArmor</wornGraphicPath>
+    <useWornGraphicMask>true</useWornGraphicMask>
+</apparel>
+
+<!-- BionicAssaultHelmet: headgear: worn textures are <path>_south/_east/_north; masks use the "m" suffix (e.g. _southm) -->
+<graphicData>
+    <texPath>Things/Pawn/Humanlike/Apparel/BionicAssaultHelmet/BionicAssaultHelmet</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <shaderType>CutoutComplex</shaderType>
+</graphicData>
+<apparel>
+    <wornGraphicPath>Things/Pawn/Humanlike/Apparel/BionicAssaultHelmet/BionicAssaultHelmet</wornGraphicPath>
+    <useWornGraphicMask>true</useWornGraphicMask>
+</apparel>

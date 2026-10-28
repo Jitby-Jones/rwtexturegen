@@ -1,0 +1,25 @@
+# Assault rifle #2 - "Charge assault rifle" (Spacer).
+# Fills the gap between the vanilla assault rifle and charge rifle using the vanilla
+# charge-weapon language: chamfered grey body (#666/#919191), two olive charge cells
+# (#738542/#9dad5a), black vent slots along a shorter barrel shroud, red-dot optic.
+name: ChargeAssaultRifle
+archetype: rifle
+style: spacer
+size: 128
+seed: 5
+params:
+  stock: block
+  receiver: block
+  mag: cells
+  handguard: shroud
+  sight: dot
+  muzzle: none
+  length: 0.93
+  extras: [vents]
+output:
+  dir: output/weapons/ChargeAssaultRifle
+  tex_path: Things/Item/Equipment/WeaponRanged/ChargeAssaultRifle
+preview: {}
+xml:
+  def_name: Gun_ChargeAssaultRifle
+  melee: false

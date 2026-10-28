@@ -1,0 +1,12 @@
+<!-- graphic block for Gun_AssaultRifle_Ironclad (texture: Textures/Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+</graphicData>
+
+<!-- graphic block for Gun_AssaultRifle_Ironclad (texture: Textures/Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad_UniqueA.png) -->
+<graphicData>
+    <texPath>Things/Item/Equipment/WeaponRanged/AssaultRifle_Ironclad_UniqueA</texPath>
+    <graphicClass>Graphic_Single</graphicClass>
+    <shaderType>CutoutComplex</shaderType>
+</graphicData>

@@ -1,0 +1,5 @@
+== output/weapons/ChargeAssaultRifle/ChargeAssaultRifle.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.175, bbox=x9-112 y46-89, outline_dark_frac=1.0, outline_px=4.0, colours=31, mean_luma=0.367, aspect=2.4

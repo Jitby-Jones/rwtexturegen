@@ -1,0 +1,279 @@
+# RimWorld visual style lexicon
+# ---------------------------------------------------------------------------------------
+# Each style is a reusable "visual language": shape grammar + material roles + motifs.
+# The generator's archetypes (sword, rifle, bow, armor, helmet, bionic box) read these so
+# the SAME functional design can be rendered at any tech level or faction aesthetic.
+#
+# shape.*      numeric knobs read by part builders (px values are at a 128px canvas)
+#   corners      organic | rounded | chamfered | faceted | sharp | monolithic | jagged
+#   corner_px    corner radius / chamfer size
+#   irregularity 0 = machined, 1 = hand-made / knapped / grown
+#   bulk         thickness multiplier for parts (1 = vanilla proportions)
+#   taper        how strongly blades/barrels narrow toward the tip (0..1)
+#   ornament     amount of decorative trim (0..1)
+#   segmentation how many visible plates/panels (0..1)
+# materials.*  role -> material name (see rwtex/materials.py); null = role unused
+# motifs       decoration generators the archetypes may apply (see rwtex/parts/motifs.py)
+# glow         none | inline (emissive fill only) | halo (soft glow behind outline)
+# ---------------------------------------------------------------------------------------
+version: 1
+
+roles:
+  primary:   Main mass - blade, shell plates, receiver body. Usually the stuff-tintable / colourable area.
+  secondary: Structural frame - receiver, haft, chassis, guard.
+  grip:      Hand contact - grips, wraps, stocks, straps.
+  accent:    Small coloured functional parts - cells, caps, pads.
+  trim:      Decorative edging - gold, brass, filigree.
+  energy:    Emissive parts - mono-edges, cells, glow strips, sensor eyes.
+  dark:      Recesses, vents, undersuits, bores.
+  lens:      Optics, visors, sensor lenses.
+
+styles:
+
+  neolithic:
+    label: Neolithic
+    tech_level: Neolithic
+    aka: [tribal, primitive, stone age, animist]
+    summary: Hand-made from wood, bone, stone and hide. Lashed joins, uneven edges, earthy browns, stuff-tinted heads.
+    shape: {corners: organic, corner_px: 2.5, irregularity: 0.65, bulk: 1.05, taper: 0.55, ornament: 0.25, segmentation: 0.2}
+    materials: {primary: tint_white, secondary: wood, grip: hide, accent: sinew, trim: feather_red, energy: null, dark: wood_dark, lens: null}
+    shading: {bevel_light: 1.2, bevel_shade: 1.5, split: false}
+    motifs: [lashing, knap_facets, wood_grain, beads]
+    glow: none
+    palette_notes: "Wood #9c5c40/#744430, hide #a0764c, sinew #c8b48a. Heads stay near-white so stuff colour (flint, jade, bone) tints them."
+    do:
+      - Wrap every join with 2-4 diagonal lashing bands in sinew/hide.
+      - Let silhouettes wobble - no perfectly parallel edges, chipped knapped facets on stone.
+      - Keep wood hafts slightly bent or knotted; one or two grain strokes are enough.
+    dont:
+      - No screws, rivets, perfect circles or symmetric machined bevels.
+      - No metal greys outside of stuff-tinted heads; no glow.
+    vanilla_refs: [Club, Spear, Ikwa, Short bow, Recurve bow, Great bow, Pilum, Tribalwear, War mask, Tribal headdress]
+    mod_refs: [VWE Longbow, VWE Throwing rocks]
+
+  medieval:
+    label: Medieval
+    tech_level: Medieval
+    aka: [forged, smithed, plate, feudal]
+    summary: Forged steel shapes with clean geometric edges, leather-wrapped grips, crossguards and round pommels. Stuff-tinted metal.
+    shape: {corners: sharp, corner_px: 1.0, irregularity: 0.15, bulk: 1.0, taper: 0.6, ornament: 0.3, segmentation: 0.4}
+    materials: {primary: blade_white, secondary: iron_dark, grip: leather, accent: brass, trim: brass, energy: null, dark: iron_dark, lens: null}
+    shading: {bevel_light: 1.0, bevel_shade: 1.2, split: true}
+    motifs: [fuller, leather_wrap, rivets, crossguard]
+    glow: none
+    palette_notes: "Blades white/#ddd split facet (stuff tints them), iron hilts #4a4a4a, leather #6e4a32, brass #c49a3c fittings."
+    do:
+      - "Use a white blade with a hard two-tone split (top light, bottom #ddd) and a thin fuller line."
+      - Crossguards and pommels are simple geometric solids (bar, disc, ball).
+      - Plate armor = overlapping lames with rivet dots and visible leather straps.
+    dont:
+      - No electronics, panel seams, glow or polymer black.
+    vanilla_refs: [Longsword, Gladius, Mace, Steel axe, Warhammer, Plate armor, Simple helmet]
+    mod_refs: [VWE Poleaxe, VWE Battle axe, VAE Light plate armor, VAE Plate helmet]
+
+  industrial:
+    label: Industrial
+    tech_level: Industrial
+    aka: [modern, firearm, 20th century, colony tech]
+    summary: "Real-world-inspired machinery. Gunmetal #666 receivers, polymer #222 furniture or wood stocks, screws, rails and stamped plates."
+    shape: {corners: chamfered, corner_px: 1.5, irregularity: 0.05, bulk: 1.0, taper: 0.2, ornament: 0.05, segmentation: 0.6}
+    materials: {primary: gunmetal, secondary: polymer, grip: polymer, accent: wood, trim: brass, energy: null, dark: polymer, lens: lens_teal}
+    shading: {bevel_light: 1.4, bevel_shade: 1.6, split: false}
+    motifs: [screws, rails, ejection_port, stencil, stitching, pouches]
+    glow: none
+    palette_notes: "Exact vanilla gun ramp: #222 furniture, #333/#444 highlights, #666 receiver, #919191 lit edge, #4d4d4d shade. Wood #9c5c40. Olive drab #6b7347 and tan #cdb27c for variants."
+    do:
+      - Read as a recognisable real firearm silhouette (AR, AK, bullpup, LMG) at 64px.
+      - Use small rectangular details - ejection port, charging handle, screw dots - in the deep tone.
+      - Flak/ballistic apparel = soft olive/khaki vests with pouches and stitching lines.
+    dont:
+      - No glowing parts, no seamless curves, no ornament.
+    vanilla_refs: [Assault rifle, Revolver, Autopistol, Pump shotgun, Bolt-action rifle, LMG, Heavy SMG, Sniper rifle, Minigun, Flak vest, Flak jacket, Simple helmet]
+    mod_refs: [VWE Battle rifle, VWE Service rifle, VWE Carbine, VWE HMG, DMS heavy weapons]
+
+  spacer:
+    label: Spacer
+    tech_level: Spacer
+    aka: [glitterworld, plasteel, charge, power armor, marine]
+    summary: Chunky manufactured sci-fi. Chamfered grey bodies with olive charge cells, black vent slots, white tintable power-armor shells over dark undersuits.
+    shape: {corners: chamfered, corner_px: 3.0, irregularity: 0.0, bulk: 1.1, taper: 0.25, ornament: 0.1, segmentation: 0.7}
+    materials: {primary: spacer_grey, secondary: gunmetal, grip: polymer, accent: charge_cell, trim: steel_bright, energy: led_cyan, dark: undersuit, lens: visor_dark}
+    shading: {bevel_light: 1.6, bevel_shade: 1.8, split: true}
+    motifs: [vent_slots, charge_cells, panel_seams, status_led]
+    glow: inline
+    palette_notes: "Charge rifle: #666 body, #919191 lit facets, olive cells #738542/#9dad5a, black slots. Armor: #fcfcfc shells, #cccccc facets, #303030 undersuit, black T-visor."
+    do:
+      - Big chamfered (45 deg) corners and stacked rectangular volumes.
+      - Rows of black rounded vent slots; 1-3 olive charge cells.
+      - Power armor = broad yoke over the shoulders, chest plate, segmented abdomen, thigh plates, dark joints.
+    dont:
+      - No wood, no rivets, no ornate trim. Keep glow tiny (status LEDs) - charge weapons do not glow.
+    vanilla_refs: [Charge rifle, Charge lance, Marine armor, Marine helmet, Recon armor, Recon helmet, Advanced helmet]
+    mod_refs: [VWE Charge LMG, VWE Charge sniper, VAE Light marine armor, VAE Trooper armor]
+
+  ultratech:
+    label: Ultratech
+    tech_level: Ultra
+    aka: [ultra, mono, plasma, glitterworld elite, persona]
+    summary: Sleek, precise and minimal. Smooth white ceramic or graphite with a single luminous accent line (cyan mono-edge, orange plasma). Fewer, larger, perfectly clean shapes.
+    shape: {corners: rounded, corner_px: 2.0, irregularity: 0.0, bulk: 0.9, taper: 0.35, ornament: 0.15, segmentation: 0.35}
+    materials: {primary: ceramic, secondary: graphite, grip: graphite, accent: teal_steel, trim: steel_bright, energy: mono_cyan, dark: undersuit, lens: cyan_glow}
+    shading: {bevel_light: 1.0, bevel_shade: 1.2, split: true}
+    motifs: [edge_line, node_dots, seam_lines, emitter]
+    glow: inline
+    palette_notes: "Monosword: blade #fff/#dedede, cyan #2986a5 line with bulb dot, grip #646464, guard #969696. Plasma #fc9030/#fcc044. Zeushammer graphite #3c4044 + teal #5e7f7c."
+    do:
+      - One hero accent - a thin emissive line or blade that follows the form, ending in a node dot.
+      - Long uninterrupted surfaces; seams are single thin lines, not plates.
+      - Cataphract-style armor = large smooth shells, high pauldrons/back fins, slit visor.
+    dont:
+      - No rivets, vents rows, wood or grime; do not cover surfaces with greebles.
+      - Avoid more than one glow colour per item.
+    vanilla_refs: [Monosword, Plasmasword, Zeushammer, Persona weapons, Cataphract armor, Cataphract helmet, Locust armor, Phoenix armor]
+    mod_refs: [VE Persona Weapons (modular blades/guards/grips/details), VWE Laser, VFE Deserters]
+
+  archotech:
+    label: Archotech
+    tech_level: Archotech
+    aka: [archite, archonexus, godlike, superintelligence]
+    summary: Impossible precision. Sage-olive monolithic blocks stacked like a city plan, dark frames, glowing yellow circuit traces ending in vias. Feels grown by a superintelligence, not built.
+    shape: {corners: monolithic, corner_px: 0.5, irregularity: 0.0, bulk: 1.0, taper: 0.15, ornament: 0.6, segmentation: 0.9}
+    materials: {primary: archo_olive, secondary: archo_frame, grip: archo_frame, accent: archo_sage, trim: archo_sage, energy: archo_yellow, dark: archo_frame, lens: archo_yellow}
+    shading: {bevel_light: 1.0, bevel_shade: 1.0, split: false}
+    motifs: [nested_blocks, circuit_traces, vias, floating_fragments]
+    glow: halo
+    palette_notes: "Archotech structures: olive #848864/#949470/#7c7c5c, light #c0c0a0, frame #444444, traces #e6d53a. Archotech eye: sage #525c4f/#737963 with #dedf42 swirl. Archotech HealthItem tint (155,165,148)."
+    do:
+      - Build forms from stepped rectilinear blocks of slightly different olive values.
+      - Run 1px yellow traces with right-angle turns, ending in round vias; add 1-3 bright nodes.
+      - Allow small detached fragments hovering beside the main form.
+    dont:
+      - No visible fasteners, no wear, no organic curves except the archotech eye swirl.
+      - Do not use cyan/white - that reads ultratech.
+    vanilla_refs: [Archotech eye, Archotech arm/leg (item tint), Archotech tower, Archonexus core, Archite capsule]
+    mod_refs: [Bionic Icons archotech boxes (sage + mint strip, module = yellow traces)]
+
+  imperial:
+    label: Imperial
+    tech_level: Ultra
+    aka: [royalty, empire, prestige, noble, stellic]
+    summary: Ultratech or spacer gear dressed for the Empire. White shells with gold trim, crests, laurel fans and plumes; purple/regal accents.
+    shape: {corners: rounded, corner_px: 2.0, irregularity: 0.0, bulk: 1.05, taper: 0.35, ornament: 0.85, segmentation: 0.5}
+    materials: {primary: armor_white, secondary: graphite, grip: imperial_purple, accent: imperial_gold, trim: imperial_gold, energy: mono_cyan, dark: undersuit, lens: visor_dark}
+    shading: {bevel_light: 1.2, bevel_shade: 1.4, split: true}
+    motifs: [gold_trim, crest, laurel_fan, plume]
+    glow: inline
+    palette_notes: "Prestige armor gold #b4983c / #88702c / #584c1c over #fcfcfc shells."
+    do:
+      - Keep the base item recognisable, then add gold crests, fan/laurel shapes behind the head, gold edging on pauldrons.
+      - "Gold is NOT stuff-tinted: leave it out of the mask."
+    dont:
+      - Do not gild everything - 15-25% gold coverage at most.
+    vanilla_refs: [Prestige marine/recon/cataphract armor + helmets, Crown, Stellic crown, Coronet, Royal robe]
+    mod_refs: [VAE Royal trooper/siegebreaker armor, VFE Empire]
+
+  mechanoid:
+    label: Mechanoid
+    tech_level: Spacer
+    aka: [mech, mechanoid hive, centipede, scyther, lancer]
+    summary: Alien war machines. Smooth pale-olive or taupe carapace shells, chamfered plate seams, dark sensor pits and red/pale-blue lights. Weapons look grown from armour plates.
+    shape: {corners: faceted, corner_px: 3.0, irregularity: 0.1, bulk: 1.15, taper: 0.5, ornament: 0.2, segmentation: 0.6}
+    materials: {primary: mech_taupe, secondary: mech_pale, grip: undersuit, accent: mech_conduit, trim: mech_pale, energy: mech_red, dark: undersuit, lens: mech_red}
+    shading: {bevel_light: 1.6, bevel_shade: 1.8, split: true}
+    motifs: [carapace_plates, conduit_line, vent_slots, sensor_eye]
+    glow: inline
+    palette_notes: "Charge blaster taupe #8c7868/#9c8c84/#706458/#4c4038 with pale-blue conduit #a4b4bc. Lancer shell #a9ad9c/#bcc0b4. Lights #fc4838."
+    do:
+      - Wedge/kite silhouettes made of overlapping chamfered plates with an engraved central channel.
+      - One pale-blue conduit line or a pair of red lights; black slot vents along the sides.
+    dont:
+      - No human ergonomics (no pistol grips/stocks), no wood/polymer.
+    vanilla_refs: [Charge blaster, Heavy charge blaster, Inferno cannon, Needle gun, Lancer, Scyther, Centurion, Diabolus]
+    mod_refs: [VFE Mechanoids, DMS automatroids (industrial variant)]
+
+  anomaly:
+    label: Anomaly
+    tech_level: Industrial
+    aka: [void, horax, dark, bioferrite, fleshwork, occult]
+    summary: Wrongness. Bioferrite and dark flesh-metal, jagged asymmetric spikes, twisted forms and a single thin red ichor glow.
+    shape: {corners: jagged, corner_px: 1.0, irregularity: 0.8, bulk: 1.0, taper: 0.7, ornament: 0.4, segmentation: 0.3}
+    materials: {primary: bioferrite, secondary: void_black, grip: flesh, accent: flesh, trim: void_black, energy: glow_red, dark: void_black, lens: glow_red}
+    shading: {bevel_light: 1.0, bevel_shade: 1.6, split: false}
+    motifs: [spikes, cracks, veins, ichor_line]
+    glow: inline
+    palette_notes: "Nerve spiker #585050/#343434/#706868/#4c2c2c with red #e03a3a line; bioferrite stuff (100,80,80); Horaxian weapons are white jagged (stuff-tinted)."
+    do:
+      - Break symmetry, add barbs and hooks, let outlines zig-zag.
+      - Thin red line or slit as the only light.
+    dont:
+      - No clean panel seams or bright colours besides the red.
+    vanilla_refs: [Horaxian gladius/axe/mace/club/knife, Nerve spiker, Hellcat rifle, Twisted archotech support]
+    mod_refs: []
+
+  dms:
+    label: Dead Man's Switch
+    tech_level: Industrial
+    aka: [DMS, ancient military, 90s cyberpunk, automatroid, Nara Interstellar, colonization forces]
+    summary: Ancient colonial-army hardware. Boxy gunmetal with 45-degree chamfers, slot vents, rivet dots and brass ammo; olive drab, khaki and hazard-yellow variants; bio-mech bionic suits of black artificial muscle.
+    shape: {corners: chamfered, corner_px: 3.5, irregularity: 0.05, bulk: 1.15, taper: 0.15, ornament: 0.1, segmentation: 0.85}
+    materials: {primary: dms_gunmetal, secondary: dms_steel, grip: polymer, accent: brass, trim: hazard_yellow, energy: glow_orange, dark: polymer, lens: visor_dark}
+    shading: {bevel_light: 1.8, bevel_shade: 2.0, split: true}
+    motifs: [vent_slots, rivets, chevrons, scratches, hazard_stripes, stencil, muscle_fibers]
+    glow: none
+    palette_notes: "Mech/weapon greys #5c5c5c/#7a7a7a/#474747, olive #5e6444, hazard #d4a22a, cargo khaki #a89466, brass ammo. Bionic suit = #3a3a3a muscle fibre + white faceless mask."
+    do:
+      - Chunky rectangular masses, every corner chamfered, recessed slot vents (3-6 horizontal slots).
+      - Small diagonal scratch highlights and rivet dots; brass ammo boxes/belts as the only warm accent.
+      - "Heavy weapons are long and detailed (real-world: GAU, M2, Barrett) but still flat grey."
+    dont:
+      - No glossy ultratech curves, no glow beyond tiny lamps.
+    vanilla_refs: []
+    mod_refs: [DMS Bionic suit, Hazard suit, Battle Friends walker frame, Tarbosaurus/Iguana weapons, Geochelone]
+
+  bionic:
+    label: Bionic (Bionic Icons)
+    tech_level: Spacer
+    aka: [prosthetic, bionics, implant, body part, augment, Bionic Icons]
+    summary: Body-part items as tier-coloured rounded cases with an engraved organ pictogram and a glowing tier strip, following the Bionic Icons mod. On-pawn bionics are clean light-grey metal with dark teal lenses.
+    shape: {corners: rounded, corner_px: 6.0, irregularity: 0.0, bulk: 1.0, taper: 0.0, ornament: 0.1, segmentation: 0.3}
+    materials: {primary: bionic_khaki, secondary: steel_bright, grip: undersuit, accent: lens_teal, trim: steel_bright, energy: glow_green, dark: undersuit, lens: lens_teal}
+    shading: {bevel_light: 1.5, bevel_shade: 1.5, split: false}
+    motifs: [tier_strip, pictogram, lid_band]
+    glow: inline
+    tiers:
+      prosthetic:          {case: prosthetic_mauve, strip: null}
+      prosthetic_advanced: {case: prosthetic_mauve, strip: glow_green}
+      bionic:              {case: bionic_khaki, strip: null}
+      bionic_advanced:     {case: bionic_khaki, strip: glow_green}
+      archotech:           {case: archo_sage, strip: glow_mint}
+      archotech_module:    {case: archo_sage, strip: glow_yellow, traces: archo_yellow}
+      ultratech:           {case: ultratech_case, strip: cyan_glow}
+      synthetic:           {case: ultratech_case, strip: glow_purple}
+      surrogate:           {case: ultratech_case, strip: glow_orange}
+      organic:             {case: ultratech_case, strip: glow_red}
+    palette_notes: "Vanilla HealthItem tints: prosthetic (154,124,104), bionic (189,169,118), archotech (155,165,148). Icon colour = (0.25,0.25,0.25) multiply. Bionic eye overlay: #a0a0a0/#e8e8e8 plate, black ring, #303a3d lens."
+    do:
+      - One pictogram per part (arm, leg, eye, heart, spine...) drawn as a solid silhouette, engraved darker into the case face.
+      - Encode tier by case colour + bottom strip glow, never by changing the pictogram.
+    dont:
+      - Don't use EPOE's flat isometric boxes for new bionic art - Bionic Icons is the reference.
+    vanilla_refs: [Bionic arm/leg/eye/spine/heart (HealthItem tints), Bionic eye overlay, Archotech eye overlay]
+    mod_refs: ["Bionic Icons (AUTOMATIC1111, MIT)", "EPOE-Forked tier colours (SimplePart #3f6182, BionicPart #68648b, AdvancedPart #1f8e00, SyntheticPart #8500ab)"]
+
+  vanilla_expanded:
+    label: Vanilla Expanded
+    tech_level: any
+    aka: [VE, Oskar, VWE, VAE, VFE]
+    summary: House style that stays deliberately vanilla - same outline weight, gray ramps and proportions at 128px - but with more real-world references and modular variants (VE persona weapons are assembled from Blade/Guard/Grip/Detail layers).
+    shape: {corners: chamfered, corner_px: 1.5, irregularity: 0.05, bulk: 1.0, taper: 0.25, ornament: 0.2, segmentation: 0.6}
+    materials: {primary: gunmetal, secondary: polymer, grip: polymer, accent: tan, trim: brass, energy: mono_cyan, dark: polymer, lens: lens_teal}
+    shading: {bevel_light: 1.4, bevel_shade: 1.6, split: false}
+    motifs: [screws, rails, modular_parts]
+    glow: none
+    palette_notes: "VWE uses tan #cdb27c, olive drab #6b7347, wood and the vanilla gun ramp; VPWE monosword details use cyan #2a8fa8 on white blades."
+    do:
+      - Match vanilla exactly; vary silhouettes by swapping modules (stock, handguard, optic, blade, guard).
+    dont:
+      - No new rendering tricks - VE content must sit beside vanilla unnoticed.
+    vanilla_refs: []
+    mod_refs: [Vanilla Weapons Expanded, Vanilla Armour Expanded, Vanilla Persona Weapons Expanded]

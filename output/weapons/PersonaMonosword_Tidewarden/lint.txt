@@ -1,0 +1,10 @@
+== output/weapons/PersonaMonosword_Tidewarden/PersonaMonosword_Tidewarden.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.123, bbox=x2-124 y51-76, outline_dark_frac=1.0, outline_px=4.0, colours=89, mean_luma=0.658, aspect=4.88
+== output/weapons/PersonaMonosword_Tidewarden/PersonaMonosword_Tidewarden_m.png
+  ok    power-of-two size
+  ok    mask has coloured region
+  ok    mask aligned with base alpha
+  stats size=128x128

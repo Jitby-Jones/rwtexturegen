@@ -1,0 +1,5 @@
+== output/weapons/ArcGlaive_Halcyon/ArcGlaive_Halcyon.png
+  ok    power-of-two size
+  ok    transparent pixels are black
+  ok    continuous dark outline
+  stats size=128x128, coverage=0.113, bbox=x3-124 y36-75, outline_dark_frac=1.0, outline_px=3.0, colours=147, mean_luma=0.538, aspect=3.1
